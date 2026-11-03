@@ -4,6 +4,7 @@
   "official_IP_in_git": false,
   "Windows_font_files_in_git": false,
   "private_media_in_git": false,
-  "binary_release": "Draft only,not public pending license review",
-  "untouched_original_submission": true
+  "binary_release": "Public diagnostic prerelease,explicitly authorized by repository owner",
+  "untouched_original_submission": true,
+  "public_release_url": "https://github.com/beforecell/FPGA-Project/releases/tag/alpha-1.0-artf-diagnostic-20261102"
 }

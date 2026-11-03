@@ -4,7 +4,7 @@ Windows64位、64位Python3.12及Launcher、合法Anlogic TD6.2.1（6.2.168116�
 
 先执行README中的依赖恢复与verify_sources。然后选择两种合法固件来源之一：
 
-1. 有权使用的冻结bit：`python scripts/import_firmware.py "X:\authorized-bits"`按SHA放回4个工程。管理者的候选Release是草稿，普通访客不能下载；不要假称公开仓库带现成bit。
+1. 下载[公开候选Release](https://github.com/beforecell/FPGA-Project/releases/tag/alpha-1.0-artf-diagnostic-20261102)中的4个bit以及SHA256SUMS.txt，核对哈希后运行：`python scripts/import_firmware.py "X:\downloaded-bits"`。脚本按冻结SHA将bit放回4个工程；它不下载或写入板子。公开下载不替代第三方许可要求。
 2. 自行重建：
 
 ```powershell
