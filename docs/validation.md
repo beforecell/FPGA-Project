@@ -16,6 +16,6 @@ NTF1历史完整32,026,624字节网口写/读回、SHA相同及声音/两图片�
 
 本轮执行项与结果记录在verification/publication-checks.json。软件、确定性RTL和依赖恢复按具体命令分别记录；使用自有合成输入和脱敏网络夹具，不能冒充原道路测试。冷启动/写卡证据为脱敏历史副本，原始记录留在本地。
 
-原HDL/约束/build.tcl输入保持字节一致，本轮不重新运行TD、不下载FPGA、不写TF/Flash、不改网络配置。包装脚本及host路径适配有独立测试，不沿用旧bit结论证明新主机界面无误。
+原HDL/约束/build.tcl输入保持字节一致，2026-11-03复现修复轮次另在干净中文/空格路径真实重编译了ARTF和NTF1；详情见reproduction-debug.md。本轮没有下载FPGA、写TF/Flash或改网络配置。包装脚本及host路径适配有独立测试，不沿用旧bit结论证明新主机界面无误。
 
 可运行tests/test_publication.py、test_manager.py、test_network_software.py、test_network_bridge.py、test_difference_rtl.py、test_historical_unit.py。Icarus的IVERILOG_BIN指向本机bin目录；测试模型不代表SD物理时序或HDMI物理链路。

@@ -89,7 +89,7 @@ def download(project,log,diagnostic=False,verify_configuration=False,expected_ru
         raise RuntimeError('该候选未通过实板启动验证，已停用默认下载；请使用工作台中的ART9回退版本。')
     if not TD.is_file():raise RuntimeError('找不到安路TD；请在工作台“TD工具路径”选择安装目录bin内的td_commands_prompt.exe')
     cmd=['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',str(project/'Download-SRAM.ps1'),'-TDExe',str(TD)]
-    if diagnostic:cmd.append('-AllowBoardDiagnostic')
+    if diagnostic and (project/'BOARD_TEST_REJECTED.json').exists():cmd.append('-AllowBoardDiagnostic')
     process=subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,creationflags=0x08000000)
     lines=[]
     for b in iter(process.stdout.readline,b''):

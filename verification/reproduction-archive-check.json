@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "steps": [
+    {
+      "step": "RAR_test",
+      "returncode": 0,
+      "seconds": 0.1
+    },
+    {
+      "step": "RAR_extract",
+      "returncode": 0,
+      "seconds": 0.29
+    },
+    {
+      "step": "install",
+      "returncode": 0,
+      "seconds": 11.08
+    },
+    {
+      "step": "static_manifest",
+      "returncode": 0,
+      "seconds": 0.16
+    },
+    {
+      "step": "sources_and_bits",
+      "returncode": 0,
+      "seconds": 0.09
+    },
+    {
+      "step": "offline_wrapper",
+      "returncode": 0,
+      "seconds": 12.69
+    },
+    {
+      "step": "public_offline_wrapper",
+      "returncode": 0,
+      "seconds": 12.36
+    }
+  ],
+  "static_files": 380,
+  "RAR_bytes": 7016918,
+  "RAR_sha256": "2F8DC024E4FB1AB2049A5D06D3C30FE30A87069EF0A2BF70569A0109B1190663",
+  "frozen_input_files": 235,
+  "board_operations": false
+}

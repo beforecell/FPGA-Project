@@ -3,8 +3,13 @@ import json,hashlib,argparse
 R=Path(__file__).resolve().parents[1]
 def verify(require_bits=False):
  records=[];missing=[]
- for P in sorted((R/'fpga').iterdir()):
-  if not P.is_dir():continue
+ versions=json.loads((R/'verification/versions.json').read_text(encoding='utf8'))
+ required={'player','tf-maintenance','uart-maintenance','fallback-art9'}
+ if not required.issubset(versions):raise ValueError('Missing required FPGA role in versions.json')
+ for role in sorted(required):
+  P=(R/versions[role]['project_relative']).resolve()
+  if not P.is_relative_to(R.resolve()):raise ValueError('FPGA project path outside repository')
+  if not P.is_dir():missing.append(str(P.relative_to(R)));continue
   m=json.loads((P/'verification/build_manifest.json').read_text(encoding='utf-8-sig'))
   for n,h in m['source_sha256'].items():
    p=P/n

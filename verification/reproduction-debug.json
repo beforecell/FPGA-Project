@@ -1,0 +1,275 @@
+{
+  "date": "2026-11-03",
+  "status": "PASS_OFFLINE_REPRODUCTION",
+  "hardware_operations": false,
+  "host_network_configuration_changed": false,
+  "fresh_environments": {
+    "GitHub": {
+      "installation_steps": [
+        {
+          "step": "install",
+          "returncode": 0,
+          "seconds": 13.34
+        },
+        {
+          "step": "dependencies",
+          "returncode": 0,
+          "seconds": 3.78
+        },
+        {
+          "step": "release_download",
+          "returncode": 0,
+          "seconds": 59.21
+        },
+        {
+          "step": "verify_sources",
+          "returncode": 0,
+          "seconds": 0.47
+        },
+        {
+          "step": "VBS_check",
+          "returncode": 0,
+          "seconds": 0.04
+        },
+        {
+          "step": "publication",
+          "returncode": 0,
+          "seconds": 3.21
+        }
+      ],
+      "reproduction_test_count": 14,
+      "reproduction_tests": [
+        {
+          "test": "missing_entire_FPGA_project_must_fail",
+          "status": "PASS"
+        },
+        {
+          "test": "registered_network_firmware_no_player_only_argument",
+          "status": "PASS"
+        },
+        {
+          "test": "diagnostic_player_keeps_required_explicit_argument",
+          "status": "PASS"
+        },
+        {
+          "test": "installer_CMD_propagates_PowerShell_failure",
+          "status": "PASS"
+        },
+        {
+          "test": "VBS_check_does_not_launch_GUI",
+          "status": "PASS"
+        },
+        {
+          "test": "missing_dependency_CLI_check_returns_error_without_modal",
+          "status": "PASS"
+        },
+        {
+          "test": "image_dimensions_validated_before_batch_encoding",
+          "status": "PASS"
+        },
+        {
+          "test": "network_write_card_refresh_keeps_ethernet_label",
+          "status": "PASS"
+        },
+        {
+          "test": "selected_demo_description_matches_distribution",
+          "status": "PASS"
+        },
+        {
+          "test": "existing_output_detected_before_encoding_and_not_overwritten",
+          "status": "PASS"
+        },
+        {
+          "test": "Build_wrapper_stages_valid_sources_without_GetFileHash",
+          "status": "PASS"
+        },
+        {
+          "test": "image_copy_640x480_no_original_or_existing_output_overwrite",
+          "status": "PASS"
+        },
+        {
+          "test": "actual_GUI_2video6image_Unicode_batch_audio_and_complete_IMG",
+          "status": "PASS"
+        },
+        {
+          "test": "public_release_wrong_SHA_never_imports_firmware",
+          "status": "PASS"
+        }
+      ],
+      "earlier_fixture_note": "Initial missing-dependency test mocked global import before resolving Tk patch;fixture ordering corrected and all tests rerun.Prior logs kept locally."
+    },
+    "赛事提交": {
+      "installation_steps": [
+        {
+          "step": "install",
+          "returncode": 0,
+          "seconds": 12.6
+        },
+        {
+          "step": "verify_sources",
+          "returncode": 0,
+          "seconds": 0.55
+        },
+        {
+          "step": "VBS_check",
+          "returncode": 0,
+          "seconds": 0.1
+        },
+        {
+          "step": "publication",
+          "returncode": 0,
+          "seconds": 3.55
+        }
+      ],
+      "reproduction_test_count": 13,
+      "reproduction_tests": [
+        {
+          "test": "missing_entire_FPGA_project_must_fail",
+          "status": "PASS"
+        },
+        {
+          "test": "registered_network_firmware_no_player_only_argument",
+          "status": "PASS"
+        },
+        {
+          "test": "diagnostic_player_keeps_required_explicit_argument",
+          "status": "PASS"
+        },
+        {
+          "test": "installer_CMD_propagates_PowerShell_failure",
+          "status": "PASS"
+        },
+        {
+          "test": "VBS_check_does_not_launch_GUI",
+          "status": "PASS"
+        },
+        {
+          "test": "missing_dependency_CLI_check_returns_error_without_modal",
+          "status": "PASS"
+        },
+        {
+          "test": "image_dimensions_validated_before_batch_encoding",
+          "status": "PASS"
+        },
+        {
+          "test": "network_write_card_refresh_keeps_ethernet_label",
+          "status": "PASS"
+        },
+        {
+          "test": "selected_demo_description_matches_distribution",
+          "status": "PASS"
+        },
+        {
+          "test": "existing_output_detected_before_encoding_and_not_overwritten",
+          "status": "PASS"
+        },
+        {
+          "test": "Build_wrapper_stages_valid_sources_without_GetFileHash",
+          "status": "PASS"
+        },
+        {
+          "test": "image_copy_640x480_no_original_or_existing_output_overwrite",
+          "status": "PASS"
+        },
+        {
+          "test": "actual_GUI_2video6image_Unicode_batch_audio_and_complete_IMG",
+          "status": "PASS"
+        }
+      ],
+      "earlier_fixture_note": "Initial missing-dependency test mocked global import before resolving Tk patch;fixture ordering corrected and all tests rerun.Prior logs kept locally."
+    }
+  },
+  "native_builds": [
+    {
+      "label": "github_player",
+      "role": "player",
+      "status": "PASS_NATIVE_BUILD_REGISTRATION_AND_ARGUMENT_MODEL",
+      "rebuilt_bit_sha256": "F43A150B6C9CC298D54D0FF7BA1E0FA917B3666A5178BE66CBB51986D9DE3ACA",
+      "frozen_bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+      "native_setup_ns": 1.265,
+      "native_hold_ns": 0.035,
+      "exact_native_inputs": 104,
+      "noncomment_bit_payload_identical": true,
+      "registered_diagnostic": true,
+      "programmer_invoked_during_download_test": false,
+      "physical_board_acceptance": "NOT_RUN"
+    },
+    {
+      "label": "submission_network",
+      "role": "tf-maintenance",
+      "status": "PASS_NATIVE_BUILD_REGISTRATION_AND_ARGUMENT_MODEL",
+      "rebuilt_bit_sha256": "3D729B1367D9891FB0611848391CDB024A5242A6ADA3C15E04D527FFBB0D3331",
+      "frozen_bit_sha256": "106575929DCB7598C335BBD32C54CB048D02877DDE4A78941ECCC731A48DF4A6",
+      "native_setup_ns": 0.752,
+      "native_hold_ns": 0.024,
+      "exact_native_inputs": 22,
+      "noncomment_bit_payload_identical": true,
+      "registered_diagnostic": true,
+      "programmer_invoked_during_download_test": false,
+      "physical_board_acceptance": "NOT_RUN"
+    }
+  ],
+  "regressions": [
+    {
+      "layout": "GitHub",
+      "test": "test_reproduction.py",
+      "returncode": 0,
+      "seconds": 9.71
+    },
+    {
+      "layout": "GitHub",
+      "test": "test_manager.py",
+      "returncode": 0,
+      "seconds": 1.58
+    },
+    {
+      "layout": "GitHub",
+      "test": "test_network_software.py",
+      "returncode": 0,
+      "seconds": 0.27
+    },
+    {
+      "layout": "GitHub",
+      "test": "test_network_bridge.py",
+      "returncode": 0,
+      "seconds": 0.66
+    },
+    {
+      "layout": "GitHub",
+      "test": "test_difference_rtl.py",
+      "returncode": 0,
+      "seconds": 13.14
+    },
+    {
+      "layout": "GitHub",
+      "test": "test_historical_unit.py",
+      "returncode": 0,
+      "seconds": 69.49
+    },
+    {
+      "layout": "赛事提交",
+      "test": "test_reproduction.py",
+      "returncode": 0,
+      "seconds": 10.27
+    },
+    {
+      "layout": "赛事提交",
+      "test": "test_network_software.py",
+      "returncode": 0,
+      "seconds": 0.26
+    },
+    {
+      "layout": "赛事提交",
+      "test": "test_manager.py",
+      "returncode": 0,
+      "seconds": 1.54
+    }
+  ],
+  "limits": [
+    "Single Windows machine with fresh venvs and separate Unicode/space paths;not a second PC",
+    "No new physical FPGA/TF/Flash operation or HDMI/audio/keys/network transfer acceptance",
+    "UART and ART9 frozen inputs verified;not natively rebuilt in this round",
+    "ARTF inherited configuration SRAM readback issue remains unresolved",
+    "Released firmware unchanged;rebuilt files differ only in ASCII Date comments;noncomment payload identical"
+  ]
+}

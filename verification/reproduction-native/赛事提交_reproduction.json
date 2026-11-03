@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "scope": "Offline integration/argument/error/GUI models;no board access",
+  "tests": [
+    {
+      "test": "missing_entire_FPGA_project_must_fail",
+      "status": "PASS"
+    },
+    {
+      "test": "registered_network_firmware_no_player_only_argument",
+      "status": "PASS"
+    },
+    {
+      "test": "diagnostic_player_keeps_required_explicit_argument",
+      "status": "PASS"
+    },
+    {
+      "test": "installer_CMD_propagates_PowerShell_failure",
+      "status": "PASS"
+    },
+    {
+      "test": "VBS_check_does_not_launch_GUI",
+      "status": "PASS"
+    },
+    {
+      "test": "missing_dependency_CLI_check_returns_error_without_modal",
+      "status": "PASS"
+    },
+    {
+      "test": "image_dimensions_validated_before_batch_encoding",
+      "status": "PASS"
+    },
+    {
+      "test": "network_write_card_refresh_keeps_ethernet_label",
+      "status": "PASS"
+    },
+    {
+      "test": "selected_demo_description_matches_distribution",
+      "status": "PASS"
+    },
+    {
+      "test": "existing_output_detected_before_encoding_and_not_overwritten",
+      "status": "PASS"
+    },
+    {
+      "test": "Build_wrapper_stages_valid_sources_without_GetFileHash",
+      "status": "PASS"
+    },
+    {
+      "test": "image_copy_640x480_no_original_or_existing_output_overwrite",
+      "status": "PASS"
+    },
+    {
+      "test": "actual_GUI_2video6image_Unicode_batch_audio_and_complete_IMG",
+      "status": "PASS"
+    }
+  ]
+}

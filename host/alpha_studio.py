@@ -174,9 +174,11 @@ class AlphaApp(base.App):
  def select_demo(self):
   path=ROOT/'assets/Synthetic_Demo.img'
   try:package.inspect(path,True)
+  except FileNotFoundError:
+   messagebox.showerror('演示镜像','请先从公开Release下载Synthetic_Demo.img到assets目录，或运行scripts/make_synthetic_demo.py生成。');return
   except Exception as e:messagebox.showerror('演示镜像',str(e));return
   self.img.set(str(path));self.book.select(1)
-  self.result.set('已选择网口实测资源包：夜间视频原声与两张图片。尚未写卡；基础四图测试另见说明。')
+  self.result.set('已选择合成测试资源包：几何视频、750Hz测试音及四张标准图片。尚未写卡；此素材没有实板验收记录。')
  def select_realtime_demo(self):
   path=ROOT/'assets/Alpha_Realtime_V5.img'
   try:package.inspect(path,True)
@@ -221,6 +223,7 @@ class AlphaApp(base.App):
   try:
    if kind=='image':
     with Image.open(p) as im:w,h=im.size
+    if not (1<=w<=1920 and 1<=h<=1920):raise ValueError(f'图片尺寸{w}×{h}超出1..1920像素范围。请先等比缩小副本；可使用scripts/prepare_images.py，原图不改动。')
     info=f'{w} × {h}'
    elif p.suffix.lower()=='.img':
     import blackbox_studio as media
@@ -260,6 +263,8 @@ class AlphaApp(base.App):
   if seconds<0:messagebox.showerror('时长','时长不能为负数');return
   output=filedialog.asksaveasfilename(initialdir=base.MEDIA,defaultextension='.img',filetypes=[('Alpha资源包','*.img')])
   if not output:return
+  if Path(output).exists() or (Path(output).parent/(Path(output).stem+'_assets')).exists():
+   messagebox.showerror('请换镜像名称','同名镜像或素材目录已经存在。本工具保留旧内容，请选择新名称后再制作。');return
   sources=list(self.assets)
   def work():
    import blackbox_studio as media,media_pipeline,time

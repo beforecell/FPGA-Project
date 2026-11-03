@@ -22,4 +22,5 @@ fpga/**/rtl/alpha_labels.vh
 *.pem
 /assets/*
 !/assets/README.md
+host/tools/
 

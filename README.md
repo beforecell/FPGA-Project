@@ -15,7 +15,7 @@
 & ".\.venv\Scripts\python.exe" scripts/verify_sources.py
 ```
 
-4. 用`scripts/Build.ps1`分别重建播放器和网口维护工程，并用`scripts/register_build.py`注册本机构建；或导入有权使用、与冻结SHA一致的bit。详见[完整快速开始](docs/quickstart.md)。本机新bit不自动继承原bit实板结论。
+4. 推荐先运行`.venv\Scripts\python.exe scripts/download_release.py --with-demo`，按固定SHA下载四份冻结bit与合成演示，再运行`.venv\Scripts\python.exe scripts/verify_sources.py --require-bits`。如需重建，用Build.ps1和register_build.py，详见[完整快速开始](docs/quickstart.md)；本机新bit不自动继承原bit实板结论。
 5. 双击根目录`启动工作台.vbs`。已有兼容TF时加载播放器即可；更换素材按[网口写卡流程](docs/network-tf-workflow.md)操作。
 
 **源码仓库与[候选Release](https://github.com/beforecell/FPGA-Project/releases/tag/alpha-1.0-artf-diagnostic-20261102)均公开。** Release提供4个实际bit、合成测试镜像、固件清单和完整SHA256；无需登录即可下载。厂商原始HDL、Windows字体文件、私人视频/原声和卡备份仍不上传。49项源码依赖可由合法官方资料/本机字体恢复，逐文件SHA必须匹配；已在本机独立目录验证完整235项构建输入。固件公开不代表第三方IP、字体或素材获得额外MIT授权，也不代表ARTF诊断问题已解决。相同字体版本/渲染若不匹配，恢复器会拒绝，不能假称得到原固件。
@@ -59,3 +59,7 @@ assets/                自有合成素材生成说明；不放真实道路视频
 ## 许可与分发
 
 保留仓库初始MIT文本；它不覆盖第三方权利、官方IP、Windows字体或不随库发布的素材/固件。归属与范围见[LICENSE_SCOPE.md](LICENSE_SCOPE.md)和[THIRD_PARTY.md](THIRD_PARTY.md)。不要把本库描述成所有软硬件和素材均已取得公开再分发许可。
+
+## 复现流程修复（2026-11-03）
+
+已增加[逐步检查点](docs/quickstart.md)和[排查记录](docs/reproduction-debug.md)。支持`download_release.py --with-demo`按固定SHA自动下载公开固件/合成镜像；超大图片可用prepare_images.py制作副本。修复安装错误返回码、缺工程目录误报通过、注册后网口下载参数、通道/素材误导提示与CLI检查弹窗。原生ARTF/NTF1在独立中文空格路径重编译通过，冻结HDL和发布bit保持不变。

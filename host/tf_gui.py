@@ -307,7 +307,9 @@ class App:
       kind,value=self.q.get_nowait()
       if kind=='log':
        line=time.strftime('%H:%M:%S')+' '+value;self.logfile.write(line+'\n');self.log_text.configure(state='normal');self.log_text.insert('end',line+'\n');self.log_text.see('end');self.log_text.configure(state='disabled')
-      elif kind=='card':self.set_card(value);self.connection.set(f'已连接 {self.port.get()} · CH340 USB-UART · 配套维护协议握手通过')
+      elif kind=='card':
+       self.set_card(value)
+       self.connection.set('已连接网口 · 配套维护协议与TF身份查询通过' if getattr(self.client,'channel','uart')=='ethernet' else f'已连接 {self.port.get()} · CH340 USB-UART · 配套维护协议握手通过')
       elif kind=='network_card':self.set_card(value[0]);self.connection.set(value[1])
       elif kind=='diagnostic_card':self.set_card(value);self.connection.set(f'{self.port.get()} 只读诊断结束；串口已关闭，需要“连接设备”后才能传输。')
       elif kind=='disconnect':self.connection.set('设备数据通道已断开；JTAG加载固件与传输TF镜像是独立步骤。')

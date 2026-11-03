@@ -1,0 +1,58 @@
+[
+  {
+    "role": "player",
+    "file": "player/build_manifest.json",
+    "original_sha256": "733A4CF6259362DF209594F14333C9D4DB1ECA5DF6A7F8E3B54585F0D5E49B30",
+    "published_copy_sha256": "64ECB7C2EC0E567916C495DE9A87EDC8BC744B404302D147C73FBAEBEFE7AF8A",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "player",
+    "file": "player/timing_status.rpt",
+    "original_sha256": "D427F7DF0720F4051720B24FEB2A02D6E5CF37AE2164C54373A5B16411903F72",
+    "published_copy_sha256": "D427F7DF0720F4051720B24FEB2A02D6E5CF37AE2164C54373A5B16411903F72",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "player",
+    "file": "player/timing.rpt",
+    "original_sha256": "522F43F68C498C5CB774AFF8061384D8E14F3153758BEF688572FAB8712DB621",
+    "published_copy_sha256": "BE7A00021117C9498C61DE24676E56E6EDA45A1FF421A1CB26EBAADEDC32BFA3",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "player",
+    "file": "player/area.rpt",
+    "original_sha256": "1385BF90E8211EF64E26CBA57F869F2B62256CF3F0FBFFAA4A39BB681B6F3686",
+    "published_copy_sha256": "1385BF90E8211EF64E26CBA57F869F2B62256CF3F0FBFFAA4A39BB681B6F3686",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "tf-maintenance",
+    "file": "tf-maintenance/build_manifest.json",
+    "original_sha256": "68D29FE30A56AD4A5165FBE590DE819F20EAF680A7BF6A2D79EF1E679965B0BC",
+    "published_copy_sha256": "BEC9075938D66D8EA04615DA7C0BA55C7008ACB971F1653ADB03E06EB141D9C9",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "tf-maintenance",
+    "file": "tf-maintenance/timing_status.rpt",
+    "original_sha256": "EE7C8F25D70BB1375DCA1BBBDD10EED03567D0F13CD098CCD366309D14DDF2B6",
+    "published_copy_sha256": "EE7C8F25D70BB1375DCA1BBBDD10EED03567D0F13CD098CCD366309D14DDF2B6",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "tf-maintenance",
+    "file": "tf-maintenance/timing.rpt",
+    "original_sha256": "95210ACF94C6689F8DCC0C111B738C3DD69DD334E92E15A3A2B63D6587C1B7F8",
+    "published_copy_sha256": "C4E626522E232477AD7A69A6DFD44D0E15A07250F1F277E8B5811176DBC8EDA4",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  },
+  {
+    "role": "tf-maintenance",
+    "file": "tf-maintenance/area.rpt",
+    "original_sha256": "CC6ECF68FC44F7888E4E0ABD1DDC1A4465E1F510CB8FF3B712E1908D212B350F",
+    "published_copy_sha256": "CC6ECF68FC44F7888E4E0ABD1DDC1A4465E1F510CB8FF3B712E1908D212B350F",
+    "edits": "Path redaction and text encoding only;numeric results unchanged"
+  }
+]
