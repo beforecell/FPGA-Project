@@ -1,0 +1,117 @@
+{
+  "scope": "Compared with independent contest package;native HDL/constraints/build.tcl hashes unchanged",
+  "files": [
+    {
+      "file": "host/alpha_link.py",
+      "prior_submission_sha256": "066337A818176817D0E8D2D30F519D73725F66CACA9A367D1466AB41EA785A83",
+      "repository_sha256": "066337A818176817D0E8D2D30F519D73725F66CACA9A367D1466AB41EA785A83",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/alpha_package.py",
+      "prior_submission_sha256": "534891CB3A622EF40722E9719DCC5BA6675D9E0EAF24C2E9E7BE2162452A2F07",
+      "repository_sha256": "534891CB3A622EF40722E9719DCC5BA6675D9E0EAF24C2E9E7BE2162452A2F07",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/alpha_studio.py",
+      "prior_submission_sha256": "23A3B96AB5A977E0BA175A3A526DFFC8A4922CB42DE76C9965D1191542CEDF8D",
+      "repository_sha256": "E1C901F265C2EBBDFA576B8AF4CDA8BB8A380DC7F3AEA13EDA02F4246136DAD1",
+      "changed": true,
+      "purpose": "Portable paths/local build registry/optional non-distributed voice handling"
+    },
+    {
+      "file": "host/bb48_codec.py",
+      "prior_submission_sha256": "86311458C3D15918626F2B63DEF60F1CA74825F3592B0657D0372FF209CA58C6",
+      "repository_sha256": "86311458C3D15918626F2B63DEF60F1CA74825F3592B0657D0372FF209CA58C6",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/bc1_codec.py",
+      "prior_submission_sha256": "642D6C1A174422F8C2D6C6362C19D3DD9F1B3FED09A08CE4F2668758F5142CB7",
+      "repository_sha256": "642D6C1A174422F8C2D6C6362C19D3DD9F1B3FED09A08CE4F2668758F5142CB7",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/blackbox_studio.py",
+      "prior_submission_sha256": "AC80C0F5287D84826C1984DCAC938A4C526CC10702810D961A4DF59E3D17DD41",
+      "repository_sha256": "AC80C0F5287D84826C1984DCAC938A4C526CC10702810D961A4DF59E3D17DD41",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/device_tools.py",
+      "prior_submission_sha256": "449F971B7143C51298CDA30F80BA9710BF043A7596E14E511707BA7B80BC27E4",
+      "repository_sha256": "F649A37CB011B1FBE64165459C074D97CDDA4783EF8E9A66E41348A8D212DA61",
+      "changed": true,
+      "purpose": "Portable paths/local build registry/optional non-distributed voice handling"
+    },
+    {
+      "file": "host/launch_alpha.py",
+      "prior_submission_sha256": "94CA7ECB60AD3A8298C2635E4EA2FA23D2CB17B7FDB881260D15E48E13491910",
+      "repository_sha256": "94CA7ECB60AD3A8298C2635E4EA2FA23D2CB17B7FDB881260D15E48E13491910",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/media_pipeline.py",
+      "prior_submission_sha256": "76E02B22C24F47841E91B5BC49DD6BFB5E69522E5BA5CEAA72CD8A5FC61D2015",
+      "repository_sha256": "76E02B22C24F47841E91B5BC49DD6BFB5E69522E5BA5CEAA72CD8A5FC61D2015",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/motion_reference.py",
+      "prior_submission_sha256": "D587D20DE5896EAA23A2505AF31D35946BFA5D50A58B343342EFC387ACFB4110",
+      "repository_sha256": "D587D20DE5896EAA23A2505AF31D35946BFA5D50A58B343342EFC387ACFB4110",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/network_transport.py",
+      "prior_submission_sha256": "0030C81A23782D02D7FBC65D218DC6835975377670B9FD4BF54143A4CDA0C32E",
+      "repository_sha256": "0030C81A23782D02D7FBC65D218DC6835975377670B9FD4BF54143A4CDA0C32E",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/project_paths.py",
+      "prior_submission_sha256": null,
+      "repository_sha256": "8ABCC857EB653FA5C6C173DDB085A48A9835AE90B145BF5D978BE44469DFC868",
+      "changed": true,
+      "purpose": "Portable paths/local build registry/optional non-distributed voice handling"
+    },
+    {
+      "file": "host/protocol.py",
+      "prior_submission_sha256": "A7F50EF6C011DC56D90E60CE50C3C50BF133025D69F551844A3EA5D5999B7259",
+      "repository_sha256": "A7F50EF6C011DC56D90E60CE50C3C50BF133025D69F551844A3EA5D5999B7259",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/runtime_tools.py",
+      "prior_submission_sha256": "960EDFB7A36ABB5783BB519BC1D6AA70CC6CCE5FD5105F2FC6155986512881AB",
+      "repository_sha256": "960EDFB7A36ABB5783BB519BC1D6AA70CC6CCE5FD5105F2FC6155986512881AB",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    },
+    {
+      "file": "host/tf_gui.py",
+      "prior_submission_sha256": "A6817EB0A388CC7FD05D4320EBB1DF99CD177839C1AC6F99B844D52FF5B5EADE",
+      "repository_sha256": "6865E6E9E6DF738E355E7B372036F91C283F3CF56941D8C593EBFC776CEDD86A",
+      "changed": true,
+      "purpose": "Portable paths/local build registry/optional non-distributed voice handling"
+    },
+    {
+      "file": "host/transfers.py",
+      "prior_submission_sha256": "FBE1A37198386DAD392D7546EA2D47C598D32266BF88E966684F7131AD061743",
+      "repository_sha256": "FBE1A37198386DAD392D7546EA2D47C598D32266BF88E966684F7131AD061743",
+      "changed": false,
+      "purpose": "Byte-identical software input"
+    }
+  ]
+}

@@ -1,0 +1,1350 @@
+// Four matched pixel-pipeline stages; a view is a projection of ONE timeline.
+module alpha_views(input clk,rst,frame_start,hs,vs,de,input[9:0]x,input[8:0]y,
+ input[23:0]current_rgb,next_rgb,input[7:0]phase,input fullscreen,input[1:0]view,focus,
+ input browser,loading,paused,muted,has_audio,diagnostic,announcing,image_mode,input[3:0]error,
+ input[3:0]selected,input[4:0]resource_count,input[15:0]valid_mask,image_mask,
+ output[3:0]name_item,output[4:0]name_char,input[7:0]name_data,
+ input[31:0]media_ms,duration_ms,input[15:0]frame_id,input[15:0]source_width,source_height,
+ input[3:0]boxes_valid,input[111:0]boxes,input[7:0]bar_value,input[7:0]peak_bin,input[15:0]peak_level,input[31:0]audio_underflows,output[7:0]bar_query,
+ output reg ohs,ovs,ode,output reg[23:0]rgb,output[31:0]formatted_time,input root_page,folder_images,speed_mode,analysis_on,input[10:0]rate_q8_8,input[47:0]list_map,input[3:0]list_count,selected_row,input signed[15:0]wave_min,wave_max,input wave_valid,output[7:0]wave_query,input pair_valid,photo_auto,adjust_mode,input[1:0]adjust_item,input[7:0]exposure,contrast,brightness,volume,input[7:0]wave_energy,input[8:0]wave_bins,input[15:0]box_frame);
+ wire[31:0]time_bcd,total_bcd;wire[19:0]frame_bcd,w_bcd,h_bcd,hz_bcd;
+ assign formatted_time=time_bcd;
+ alpha_time_dual tf(clk,rst,media_ms,duration_ms,time_bcd,total_bcd);
+ wire[16:0]peak_times375=({9'd0,peak_bin}<<8)+({9'd0,peak_bin}<<7)-({9'd0,peak_bin}<<3)-{9'd0,peak_bin};
+ alpha_bcd_bank numbers(clk,rst,frame_id,source_width,source_height,peak_times375[16:1],frame_bcd,w_bcd,h_bcd,hz_bcd);
+ wire difference_mask;
+ alpha_frame_difference difference(clk,rst,de,!fullscreen,pair_valid,x,y,current_rgb,next_rgb,8'd18,difference_mask);
+ wire[23:0]cur0;
+ alpha_picture_adjust picture_adjust(clk,rst,frame_start,!browser,current_rgb,exposure,contrast,brightness,cur0);
+ wire[7:0]adjust_value=adjust_item==0?exposure:adjust_item==1?contrast:adjust_item==2?brightness:volume;
+ wire[9:0]adjust_fill=10'd170+({2'd0,adjust_value}<<1)+{2'd0,adjust_value};
+ wire[3:0]adjust_tens=adjust_value==100?0:adjust_value>=90?9:adjust_value>=80?8:adjust_value>=70?7:adjust_value>=60?6:adjust_value>=50?5:adjust_value>=40?4:adjust_value>=30?3:adjust_value>=20?2:adjust_value>=10?1:0;
+ wire[7:0]adjust_ones=adjust_value==100?8'd0:adjust_value-(({4'd0,adjust_tens}<<3)+({4'd0,adjust_tens}<<1));
+reg[9:0]x_pre,x0;reg[8:0]y_pre,y0;reg[2:0]sync_pre,sync0;
+ wire[9:0]local_x=x0>=320 ? x0-320:x0;wire[8:0]local_y=y0>=240 ? y0-240:y0;
+ wire[1:0]pane=fullscreen ? view:{y0>=240,x0>=320};
+ wire[8:0]ax=fullscreen ? x0[9:1]:local_x[8:0];wire[7:0]ay=fullscreen ? y0[8:1]:local_y[7:0];
+ wire[3:0]scroll_top=selected_row>=6 ? selected_row-5:0;
+ wire[3:0]input_row=scroll_top+((y>=64 ? y-64:0)>>6);
+ wire[3:0]item_now=input_row<12 ? list_map[input_row*4+:4]:0;
+ wire[9:0]name_x=x>=320 ? x-320:x;
+ assign name_item=item_now;assign name_char=(x-64)>>3;
+
+ wire spec_input=fullscreen ? view==3:(x>=320&&y>=240);
+ wire[9:0]pre_x=fullscreen ? x:name_x;
+ wire[9:0]plot_left=fullscreen ? 64:32,plot_right=fullscreen ? 576:288;
+ wire[9:0]pre_offset=pre_x-plot_left;
+ assign bar_query=pre_x<plot_left ? 0:pre_x>=plot_right ? 128:
+    (fullscreen ? ((pre_offset>>2)+1'b1):((pre_offset>>1)+1'b1));
+ reg[7:0]curve_left,curve_right;
+ always @(posedge clk)begin
+  if(rst)begin curve_left<=0;curve_right<=0;end
+  else if(de&&spec_input&&pre_x>=plot_left&&pre_x<=plot_right)begin
+   if((fullscreen&&pre_offset[1:0]==0)||(!fullscreen&&!pre_offset[0]))
+    curve_left<=pre_x==plot_left ? bar_value:curve_right;
+   if((fullscreen&&pre_offset[1:0]==1)||(!fullscreen&&pre_offset[0]))curve_right<=bar_value;
+  end
+ end
+ assign wave_query=pre_x<=plot_left ? 0:pre_x>=plot_right ? 255:(fullscreen ? ((pre_x-plot_left)>>1):(pre_x-plot_left));
+ reg signed[15:0]wave_min0,wave_max0;
+ always @(posedge clk)begin wave_min0<=wave_min;wave_max0<=wave_max;end
+ wire signed[10:0]wave_top=(fullscreen ? 11'sd192:11'sd104)-(fullscreen ? {{3{wave_max0[15]}},wave_max0[15:8]}:{{4{wave_max0[15]}},wave_max0[15:9]});
+ wire signed[10:0]wave_bottom=(fullscreen ? 11'sd192:11'sd104)-(fullscreen ? {{3{wave_min0[15]}},wave_min0[15:8]}:{{4{wave_min0[15]}},wave_min0[15:9]});
+ wire[9:0]energy_end=plot_left+(fullscreen ? {1'b0,wave_energy,1'b0}:{2'b00,wave_energy});
+
+ wire[3:0]smooth_valid;wire[143:0]smooth_boxes;
+ alpha_box_smooth box_easing(clk,rst,frame_start,!browser&&!image_mode&&analysis_on,box_frame,boxes_valid,boxes,paused,smooth_valid,smooth_boxes);
+ reg edge_box;integer i;reg[8:0]l,r,t,b;
+ always @*begin
+  edge_box=0;
+  for(i=0;i<4;i=i+1)begin
+   l=smooth_boxes[i*36+:9];r=smooth_boxes[i*36+9+:9];t=smooth_boxes[i*36+18+:9];b=smooth_boxes[i*36+27+:9];
+   if(smooth_valid[i]&&ax>=l&&ax<=r&&ay>=t&&ay<=b&&
+    (ax==l||ax==r||ay==t||ay==b))edge_box=1;
+  end
+ end
+ function[15:0]msg;input[5:0]id;input[6:0]idx;begin msg=idx<32 ? (16'h8000|{5'd0,id,idx[4:0]}):16'd32;end endfunction
+ function[7:0]hexchar;input[3:0]v;begin hexchar=v<10 ? 48+v:65+v-10;end endfunction
+ function[7:0]digit;input[3:0]v;begin digit=v<10 ? 48+v:32;end endfunction
+ function[7:0]timechar;input[31:0]v;input[4:0]n;begin
+  case(n)0:timechar=digit(v[31:28]);1:timechar=digit(v[27:24]);2:timechar=":";
+   3:timechar=digit(v[23:20]);4:timechar=digit(v[19:16]);5:timechar=":";
+   6:timechar=digit(v[15:12]);7:timechar=digit(v[11:8]);8:timechar=".";
+   9:timechar=digit(v[7:4]);10:timechar=digit(v[3:0]);default:timechar=32;endcase
+ end endfunction
+ `include "alpha_labels.vh"
+ reg[23:0]base,ink;reg[15:0]character;reg[2:0]gx,gy;reg text_on;
+ reg[9:0]lx;reg[8:0]ly;reg[6:0]index;reg[3:0]item;reg[4:0]bar_index;
+ reg[8:0]bar_height;reg label_on;reg[2:0]label_id;reg[3:0]label_y;reg[5:0]label_x;
+ always @*begin
+  lx=fullscreen ? x0:local_x;ly=fullscreen ? y0:local_y;
+  base=pane==1 ? (difference_mask ? 24'hffffff:24'd0):cur0;ink=24'hffffff;character=32;gx=x0[2:0];gy=y0[3:1];text_on=0;index=0;item=0;
+  bar_index=fullscreen ? ((x0-64)>>4):((local_x-32)>>3);bar_height=0;label_on=0;label_x=0;label_y=0;label_id={1'b0,pane};
+  if(pane==2&&edge_box)base=24'h44ff77;
+  if(pane==3)begin
+   base=24'h091426;
+   // Relative time axis:256 bins x1024 consecutive samples /48000Hz.
+   // Partial startup history is zero/blank at the left, newest data at right.
+   if(lx>=plot_left&&lx<=plot_right&&ly>=(fullscreen ? 64:40)&&ly<=(fullscreen ? 320:168))begin
+    base=24'he5e7eb;
+    if((fullscreen ? ((lx-64)&127)==0:((lx-32)&63)==0)||
+       (fullscreen ? ((ly-64)&63)==0:((ly-40)&31)==0))base=24'hbcc4cc;
+    if(ly==(fullscreen ? 192:104)||lx==plot_left)base=24'h596879;
+    if(wave_valid&&has_audio&&$signed({2'b00,ly})>=wave_top&&$signed({2'b00,ly})<=wave_bottom)base=24'h1454e8;
+   end
+   if(ly>=24&&ly<40&&lx>=8)begin
+    text_on=1;index=(lx-8)>>3;gx=(lx-8)&7;gy=(ly-24)>>1;
+    character=rate_q8_8!=256 ? msg(6'd0,index):!has_audio ? msg(6'd1,index):paused ? msg(6'd2,index):msg(6'd3,index);
+   end
+   if(ly>=(fullscreen ? 332:176)&&ly<(fullscreen ? 348:192))begin
+    text_on=1;gy=(ly-(fullscreen ? 332:176))>>1;
+    if(lx>=plot_left-8&&lx<plot_left+40)begin gx=(lx-plot_left+8)&7;character=msg(6'd5,(lx-plot_left+8)>>3);end
+    else if(lx>=(fullscreen ? 304:144)&&lx<(fullscreen ? 352:192))begin gx=(lx-(fullscreen ? 304:144))&7;character=msg(6'd6,(lx-(fullscreen ? 304:144))>>3);end
+    else if(lx>=plot_right-8&&lx<plot_right+24)begin gx=(lx-plot_right+8)&7;character=msg(6'd8,(lx-plot_right+8)>>3);end
+    else character=32;
+   end
+   if(fullscreen&&lx>=16&&lx<56)begin
+    gx=(lx-16)&7;
+    if(ly>=60&&ly<76)begin text_on=1;character=msg(6'd10,(lx-16)>>3);gy=(ly-60)>>1;end
+    else if(ly>=188&&ly<204)begin text_on=1;character=msg(6'd14,(lx-16)>>3);gy=(ly-188)>>1;end
+    else if(ly>=312&&ly<328)begin text_on=1;character=msg(6'd11,(lx-16)>>3);gy=(ly-312)>>1;end
+   end
+   if(lx>=plot_left&&lx<=plot_right&&ly>=(fullscreen ? 384:208)&&ly<=(fullscreen ? 408:220))begin
+    base=lx<=energy_end&&wave_energy!=0 ? 24'h30b980:24'h26364a;
+   end
+   if(ly>=(fullscreen ? 360:192)&&ly<(fullscreen ? 376:208)&&lx>=plot_left)begin
+    text_on=1;gx=(lx-plot_left)&7;gy=(ly-(fullscreen ? 360:192))>>1;character=msg(6'd18,(lx-plot_left)>>3);
+   end
+   if(fullscreen&&y0>=432&&y0<448&&x0>=32)begin
+    text_on=1;gx=(x0-32)&7;gy=(y0-432)>>1;character=msg(6'd19,(x0-32)>>3);
+   end
+   if(fullscreen&&y0>=448&&y0<464&&x0>=32)begin
+    text_on=1;index=(x0-32)>>3;gx=(x0-32)&7;gy=(y0-448)>>1;
+    character=index<6 ? msg(6'd21,index):index<17 ? timechar(time_bcd,index-6):16'd32;
+   end
+  end
+
+  if(!browser&&!loading&&lx>=8&&lx<72&&ly>=4&&ly<20)begin
+   label_on=1;label_id=image_mode ? 3'd5:{1'b0,pane};label_y=ly-4;label_x=lx-8;
+  end
+  // Make normal playback, enlarged analysis and speed editing explicit.
+  if(fullscreen&&!browser&&!loading&&!image_mode&&x0>=80&&x0<224&&y0>=4&&y0<20)begin
+   base=analysis_on ? 24'h5c3d0b:24'h123e57;text_on=1;ink=24'hffffff;
+   gx=(x0-80)&7;gy=(y0-4)>>1;index=(x0-80)>>3;
+   character=speed_mode ? msg(6'd55,index):analysis_on ? msg(6'd54,index):msg(6'd53,index);
+  end
+  if(image_mode&&!browser&&!loading&&x0>=80&&x0<256&&y0>=4&&y0<20)begin
+   base=photo_auto ? 24'h145237:24'h123e57;ink=24'hffffff;text_on=1;label_on=0;
+   gx=(x0-80)&7;gy=(y0-4)>>1;index=(x0-80)>>3;
+   character=photo_auto ? msg(6'd57,index):msg(6'd58,index);
+  end
+  if(fullscreen&&pane!=3&&!image_mode&&x0>=384&&y0<32)begin
+   base=24'h102037;text_on=1;gx=(x0-384)&7;gy=y0[3:1];index=(x0-384)>>3;
+   if(y0<16)character=index<11 ? timechar(time_bcd,index):index==11 ? "/":timechar(total_bcd,index-12);
+   else begin
+    if(index<6)character=msg(6'd23,index);
+    else if(index<11)character=digit(frame_bcd[(10-index)*4+:4]);
+    else if(pane==1)character=32;else character=32;
+   end
+  end
+  if(!fullscreen&&!browser&&!loading&&(x0==0||x0==319||x0==320||x0==639||y0==0||y0==239||y0==240||y0==479))
+   base=pane==focus ? 24'hffcb55:24'h26364a;
+  if(!browser&&!loading&&!announcing&&y0>=464)begin
+   base=24'h102037;text_on=1;index=x0>>3;gx=x0[2:0];gy=y0[3:1];
+   if(index<7)character=paused ? msg(6'd25,index):msg(6'd26,index);
+   else if(index<13)character=muted ? msg(6'd27,index-7):msg(6'd28,index-7);
+   else character=image_mode ? msg(6'd56,index-13):analysis_on&&!fullscreen ? msg(6'd30,index-13):msg(6'd31,index-13);
+  end
+  if(browser)begin
+   base=24'h0b1425;text_on=0;
+   if(root_page)begin
+    if(y0>=96&&y0<304)begin
+     item=y0>=208 ? 1:0;
+     if((y0<192)||(y0>=208))begin
+      if(x0>=24&&x0<616)base=(folder_images==item[0]) ? 24'h234764:24'h14263a;
+      if(x0>=48&&x0<88&&((y0-(item==0 ? 96:208))>=28)&&((y0-(item==0 ? 96:208))<62))base=24'hf0bc4c;
+      if(x0>=48&&x0<68&&((y0-(item==0 ? 96:208))>=22)&&((y0-(item==0 ? 96:208))<28))base=24'hf0bc4c;
+      if(x0>=112&&x0<240&&y0>=(item==0 ? 120:232)&&y0<(item==0 ? 152:264))begin
+       label_on=1;label_id=item==0 ? 3'd6:3'd7;label_y=(y0-(item==0 ? 120:232))>>1;label_x=(x0-112)>>1;
+      end
+      if(x0>=280&&x0<472&&y0>=(item==0 ? 128:240)&&y0<(item==0 ? 144:256))begin
+       text_on=1;gx=(x0-280)&7;gy=(y0-(item==0 ? 128:240))>>1;index=(x0-280)>>3;
+       character=item==0 ? msg(6'd32,index):msg(6'd33,index);
+      end
+     end
+    end
+   end else begin
+    if(y0>=64&&y0<448)begin
+     item=scroll_top+((y0-64)>>6);
+     if(item<list_count)begin
+      if(item==selected_row)base=24'h234764;
+      if(!valid_mask[list_map[item*4+:4]])ink=24'hff6655;
+      if(x0>=64&&x0<256&&((y0-64)&63)>=12&&((y0-64)&63)<28)begin
+       character=name_data;gx=(x0-64)&7;gy=(((y0-64)&63)-12)>>1;text_on=1;
+      end else if(x0>=64&&x0<288&&((y0-64)&63)>=32&&((y0-64)&63)<48)begin
+       index=(x0-64)>>3;gx=(x0-64)&7;gy=(((y0-64)&63)-32)>>1;
+       character=!valid_mask[list_map[item*4+:4]] ? msg(6'd34,index):folder_images ? msg(6'd35,index):msg(6'd32,index);text_on=1;
+      end
+     end
+    end
+    if(list_count==0&&y0>=160&&y0<176&&x0>=192)begin text_on=1;gx=(x0-192)&7;gy=(y0-160)>>1;character=folder_images ? msg(6'd36,(x0-192)>>3):msg(6'd37,(x0-192)>>3);end
+   end
+   if(x0>=16&&x0<80&&y0>=12&&y0<28)begin label_on=1;label_id=root_page ? 3'd4:folder_images ? 3'd7:3'd6;label_y=y0-12;label_x=x0-16;end
+   if(y0>=456&&y0<472&&x0>=8)begin text_on=1;index=(x0-8)>>3;gx=(x0-8)&7;gy=(y0-456)>>1;character=msg(6'd38,index);end
+   if(!root_page&&y0>=32&&y0<48&&x0>=16&&x0<144)begin
+    text_on=1;index=(x0-16)>>3;gx=(x0-16)&7;gy=(y0-32)>>1;
+    if(index<5)character=folder_images ? msg(6'd39,index):msg(6'd40,index);
+    else if(!folder_images)character=timechar(total_bcd,index-5);
+    else if(index<10)character=digit(w_bcd[(9-index)*4+:4]);
+    else if(index==10)character="X";
+    else if(index<16)character=digit(h_bcd[(15-index)*4+:4]);else character=32;
+   end
+  end
+  if(!browser&&!image_mode&&(analysis_on||speed_mode||rate_q8_8!=256)&&x0>=456&&y0>=32&&y0<64)begin
+   base=24'h142c44;ink=24'hffcb55;text_on=1;gx=(x0-456)&7;gy=y0[3:1];index=(x0-456)>>3;
+   if(y0<48)case(index)
+    0:character=48+rate_q8_8[10:8];1:character=".";
+    2:character=rate_q8_8[7:6]==0 ? "0":rate_q8_8[7:6]==1 ? "2":rate_q8_8[7:6]==2 ? "5":"7";
+    3:character=rate_q8_8[6] ? "5":"0";4:character="X";
+    default:character=paused ? msg(6'd41,index-5):msg(6'd42,index-5);
+   endcase
+   else character=speed_mode ? msg(6'd43,index):rate_q8_8!=256 ? msg(6'd44,index):msg(6'd45,index);
+  end
+  if(!browser&&speed_mode&&y0>=432&&y0<448)begin
+   base=24'h142c44;ink=24'hffcb55;text_on=1;gx=x0[2:0];gy=(y0-432)>>1;
+   character=msg(6'd46,x0>>3);
+  end
+  if(loading||announcing||error!=0)begin
+   if(y0>=208&&y0<256)begin label_on=0;base=24'h142c44;text_on=1;index=(x0-96)>>3;gx=(x0-96)&7;gy=y0[3:1];
+    character=error!=0 ? msg(6'd47,index):announcing ? msg(6'd48,index):msg(6'd49,index);
+   end
+  end
+  if(adjust_mode&&!browser&&x0>=128&&x0<512&&y0>=176&&y0<312)begin
+   label_on=0;text_on=0;base=24'h14283d;ink=24'hffffff;
+   if(x0==128||x0==511||y0==176||y0==311)base=24'h58d8bf;
+   if(x0>=160&&x0<480&&y0>=192&&y0<208)begin
+    text_on=1;index=(x0-160)>>3;gx=(x0-160)&7;gy=(y0-192)>>1;
+    character=msg(6'd59+adjust_item,index);
+   end
+   if(x0>=304&&x0<328&&y0>=220&&y0<236)begin
+    text_on=1;index=(x0-304)>>3;gx=(x0-304)&7;gy=(y0-220)>>1;
+    if(index==0)character=adjust_value==100?8'd49:8'd32;
+    else if(index==1)character=digit(adjust_tens);
+    else character=digit(adjust_ones[3:0]);
+   end
+   if(x0>=168&&x0<472&&y0>=246&&y0<272)begin
+    base=24'h607080;
+    if(x0>=170&&x0<470&&y0>=248&&y0<270)base=x0<adjust_fill?24'h42d8b0:24'h22394e;
+   end
+   if(x0>=160&&x0<480&&y0>=288&&y0<304)begin
+    text_on=1;index=(x0-160)>>3;gx=(x0-160)&7;gy=(y0-288)>>1;character=msg(6'd63,index);
+   end
+  end
+ end
+ (* ram_style="bram" *)reg label_memory[0:8191];
+ reg label_q,label_on1;integer li;
+ initial begin
+  for(li=0;li<8192;li=li+1)label_memory[li]=1'b0;
+@@LOCAL_FONT_ROWS_ID_3@@
+@@LOCAL_FONT_ROWS_ID_2@@
+@@LOCAL_FONT_ROWS_ID_1@@
+@@LOCAL_FONT_ROWS_ID_0@@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@@LOCAL_FONT_ROWS_ID_4@@
+@@LOCAL_FONT_ROWS_ID_5@@
+@@LOCAL_FONT_ROWS_ID_6@@
+@@LOCAL_FONT_ROWS_ID_7@@
+ end
+ always @(posedge clk)label_q<=label_memory[{label_id,label_y,label_x}];
+ always @(posedge clk)if(rst)label_on1<=0;else label_on1<=label_on;
+ wire glyph;reg[7:0]ch1;reg[2:0]gx1,gy1;reg[23:0]base1,ink1;reg text1;reg[2:0]sync1;
+ (* ram_style="bram" *)reg[7:0]text_memory[0:2047];
+ reg[7:0]text_q;reg literal1;integer ti;
+ initial begin
+  for(ti=0;ti<2048;ti=ti+1)text_memory[ti]=8'd32;
+  text_memory[672]=8'd84;
+  text_memory[673]=8'd73;
+  text_memory[674]=8'd77;
+  text_memory[675]=8'd69;
+  text_memory[676]=8'd58;
+  text_memory[677]=8'd32;
+  text_memory[608]=8'd66;
+  text_memory[609]=8'd73;
+  text_memory[610]=8'd78;
+  text_memory[611]=8'd49;
+  text_memory[612]=8'd48;
+  text_memory[613]=8'd50;
+  text_memory[614]=8'd52;
+  text_memory[615]=8'd32;
+  text_memory[616]=8'd47;
+  text_memory[617]=8'd50;
+  text_memory[618]=8'd53;
+  text_memory[619]=8'd54;
+  text_memory[620]=8'd66;
+  text_memory[621]=8'd73;
+  text_memory[622]=8'd78;
+  text_memory[623]=8'd83;
+  text_memory[624]=8'd32;
+  text_memory[625]=8'd47;
+  text_memory[626]=8'd83;
+  text_memory[627]=8'd73;
+  text_memory[628]=8'd71;
+  text_memory[629]=8'd78;
+  text_memory[630]=8'd69;
+  text_memory[631]=8'd68;
+  text_memory[632]=8'd32;
+  text_memory[633]=8'd80;
+  text_memory[634]=8'd67;
+  text_memory[635]=8'd77;
+  text_memory[576]=8'd69;
+  text_memory[577]=8'd78;
+  text_memory[578]=8'd69;
+  text_memory[579]=8'd82;
+  text_memory[580]=8'd71;
+  text_memory[581]=8'd89;
+  text_memory[582]=8'd32;
+  text_memory[583]=8'd40;
+  text_memory[584]=8'd77;
+  text_memory[585]=8'd69;
+  text_memory[586]=8'd65;
+  text_memory[587]=8'd78;
+  text_memory[588]=8'd32;
+  text_memory[589]=8'd83;
+  text_memory[590]=8'd81;
+  text_memory[591]=8'd85;
+  text_memory[592]=8'd65;
+  text_memory[593]=8'd82;
+  text_memory[594]=8'd69;
+  text_memory[595]=8'd32;
+  text_memory[596]=8'd47;
+  text_memory[597]=8'd32;
+  text_memory[598]=8'd70;
+  text_memory[599]=8'd85;
+  text_memory[600]=8'd76;
+  text_memory[601]=8'd76;
+  text_memory[602]=8'd32;
+  text_memory[603]=8'd83;
+  text_memory[604]=8'd67;
+  text_memory[605]=8'd65;
+  text_memory[606]=8'd76;
+  text_memory[607]=8'd69;
+  text_memory[448]=8'd48;
+  text_memory[449]=8'd46;
+  text_memory[450]=8'd48;
+  text_memory[451]=8'd48;
+  text_memory[352]=8'd45;
+  text_memory[353]=8'd49;
+  text_memory[354]=8'd46;
+  text_memory[355]=8'd48;
+  text_memory[356]=8'd48;
+  text_memory[320]=8'd43;
+  text_memory[321]=8'd49;
+  text_memory[322]=8'd46;
+  text_memory[323]=8'd48;
+  text_memory[324]=8'd48;
+  text_memory[256]=8'd48;
+  text_memory[257]=8'd32;
+  text_memory[258]=8'd83;
+  text_memory[192]=8'd45;
+  text_memory[193]=8'd50;
+  text_memory[194]=8'd46;
+  text_memory[195]=8'd55;
+  text_memory[196]=8'd51;
+  text_memory[160]=8'd45;
+  text_memory[161]=8'd53;
+  text_memory[162]=8'd46;
+  text_memory[163]=8'd52;
+  text_memory[164]=8'd54;
+  text_memory[96]=8'd80;
+  text_memory[97]=8'd67;
+  text_memory[98]=8'd77;
+  text_memory[99]=8'd32;
+  text_memory[100]=8'd52;
+  text_memory[101]=8'd56;
+  text_memory[102]=8'd75;
+  text_memory[103]=8'd32;
+  text_memory[104]=8'd47;
+  text_memory[105]=8'd32;
+  text_memory[106]=8'd72;
+  text_memory[107]=8'd73;
+  text_memory[108]=8'd83;
+  text_memory[109]=8'd84;
+  text_memory[110]=8'd79;
+  text_memory[111]=8'd82;
+  text_memory[112]=8'd89;
+  text_memory[113]=8'd32;
+  text_memory[114]=8'd53;
+  text_memory[115]=8'd46;
+  text_memory[116]=8'd52;
+  text_memory[117]=8'd54;
+  text_memory[118]=8'd83;
+  text_memory[0]=8'd78;
+  text_memory[1]=8'd79;
+  text_memory[2]=8'd78;
+  text_memory[3]=8'd49;
+  text_memory[4]=8'd88;
+  text_memory[5]=8'd58;
+  text_memory[6]=8'd32;
+  text_memory[7]=8'd65;
+  text_memory[8]=8'd85;
+  text_memory[9]=8'd68;
+  text_memory[10]=8'd73;
+  text_memory[11]=8'd79;
+  text_memory[12]=8'd32;
+  text_memory[13]=8'd65;
+  text_memory[14]=8'd78;
+  text_memory[15]=8'd65;
+  text_memory[16]=8'd76;
+  text_memory[17]=8'd89;
+  text_memory[18]=8'd83;
+  text_memory[19]=8'd73;
+  text_memory[20]=8'd83;
+  text_memory[21]=8'd32;
+  text_memory[22]=8'd80;
+  text_memory[23]=8'd65;
+  text_memory[24]=8'd85;
+  text_memory[25]=8'd83;
+  text_memory[26]=8'd69;
+  text_memory[27]=8'd68;
+  text_memory[32]=8'd78;
+  text_memory[33]=8'd79;
+  text_memory[34]=8'd32;
+  text_memory[35]=8'd65;
+  text_memory[36]=8'd85;
+  text_memory[37]=8'd68;
+  text_memory[38]=8'd73;
+  text_memory[39]=8'd79;
+  text_memory[64]=8'd80;
+  text_memory[65]=8'd65;
+  text_memory[66]=8'd85;
+  text_memory[67]=8'd83;
+  text_memory[68]=8'd69;
+  text_memory[69]=8'd68;
+  text_memory[128]=8'd48;
+  text_memory[224]=8'd49;
+  text_memory[225]=8'd56;
+  text_memory[226]=8'd75;
+  text_memory[288]=8'd50;
+  text_memory[289]=8'd52;
+  text_memory[290]=8'd75;
+  text_memory[384]=8'd48;
+  text_memory[385]=8'd46;
+  text_memory[386]=8'd53;
+  text_memory[387]=8'd48;
+  text_memory[416]=8'd48;
+  text_memory[417]=8'd46;
+  text_memory[418]=8'd50;
+  text_memory[419]=8'd53;
+  text_memory[480]=8'd49;
+  text_memory[481]=8'd46;
+  text_memory[482]=8'd48;
+  text_memory[512]=8'd48;
+  text_memory[513]=8'd46;
+  text_memory[514]=8'd53;
+  text_memory[544]=8'd48;
+  text_memory[545]=8'd46;
+  text_memory[546]=8'd48;
+  text_memory[640]=8'd32;
+  text_memory[641]=8'd82;
+  text_memory[642]=8'd69;
+  text_memory[643]=8'd76;
+  text_memory[644]=8'd32;
+  text_memory[645]=8'd65;
+  text_memory[646]=8'd77;
+  text_memory[647]=8'd80;
+  text_memory[648]=8'd32;
+  text_memory[649]=8'd47;
+  text_memory[650]=8'd32;
+  text_memory[651]=8'd68;
+  text_memory[652]=8'd67;
+  text_memory[653]=8'd32;
+  text_memory[654]=8'd79;
+  text_memory[655]=8'd70;
+  text_memory[656]=8'd70;
+  text_memory[704]=8'd32;
+  text_memory[705]=8'd32;
+  text_memory[706]=8'd84;
+  text_memory[707]=8'd73;
+  text_memory[708]=8'd77;
+  text_memory[709]=8'd69;
+  text_memory[710]=8'd58;
+  text_memory[711]=8'd32;
+  text_memory[712]=8'd32;
+  text_memory[736]=8'd70;
+  text_memory[737]=8'd82;
+  text_memory[738]=8'd65;
+  text_memory[739]=8'd77;
+  text_memory[740]=8'd69;
+  text_memory[741]=8'd32;
+  text_memory[768]=8'd32;
+  text_memory[769]=8'd45;
+  text_memory[770]=8'd62;
+  text_memory[771]=8'd32;
+  text_memory[772]=8'd78;
+  text_memory[773]=8'd69;
+  text_memory[774]=8'd88;
+  text_memory[775]=8'd84;
+  text_memory[800]=8'd80;
+  text_memory[801]=8'd65;
+  text_memory[802]=8'd85;
+  text_memory[803]=8'd83;
+  text_memory[804]=8'd69;
+  text_memory[805]=8'd32;
+  text_memory[806]=8'd32;
+  text_memory[832]=8'd80;
+  text_memory[833]=8'd76;
+  text_memory[834]=8'd65;
+  text_memory[835]=8'd89;
+  text_memory[836]=8'd32;
+  text_memory[837]=8'd32;
+  text_memory[838]=8'd32;
+  text_memory[864]=8'd77;
+  text_memory[865]=8'd85;
+  text_memory[866]=8'd84;
+  text_memory[867]=8'd69;
+  text_memory[868]=8'd32;
+  text_memory[869]=8'd32;
+  text_memory[896]=8'd83;
+  text_memory[897]=8'd79;
+  text_memory[898]=8'd85;
+  text_memory[899]=8'd78;
+  text_memory[900]=8'd68;
+  text_memory[901]=8'd32;
+  text_memory[928]=8'd51;
+  text_memory[929]=8'd32;
+  text_memory[930]=8'd80;
+  text_memory[931]=8'd82;
+  text_memory[932]=8'd69;
+  text_memory[933]=8'd86;
+  text_memory[934]=8'd32;
+  text_memory[935]=8'd52;
+  text_memory[936]=8'd32;
+  text_memory[937]=8'd78;
+  text_memory[938]=8'd69;
+  text_memory[939]=8'd88;
+  text_memory[940]=8'd84;
+  text_memory[941]=8'd32;
+  text_memory[942]=8'd49;
+  text_memory[943]=8'd32;
+  text_memory[944]=8'd66;
+  text_memory[945]=8'd65;
+  text_memory[946]=8'd67;
+  text_memory[947]=8'd75;
+  text_memory[1024]=8'd86;
+  text_memory[1025]=8'd73;
+  text_memory[1026]=8'd68;
+  text_memory[1027]=8'd69;
+  text_memory[1028]=8'd79;
+  text_memory[1056]=8'd80;
+  text_memory[1057]=8'd73;
+  text_memory[1058]=8'd67;
+  text_memory[1059]=8'd84;
+  text_memory[1060]=8'd85;
+  text_memory[1061]=8'd82;
+  text_memory[1062]=8'd69;
+  text_memory[1063]=8'd83;
+  text_memory[1088]=8'd73;
+  text_memory[1089]=8'd78;
+  text_memory[1090]=8'd86;
+  text_memory[1091]=8'd65;
+  text_memory[1092]=8'd76;
+  text_memory[1093]=8'd73;
+  text_memory[1094]=8'd68;
+  text_memory[1095]=8'd32;
+  text_memory[1096]=8'd47;
+  text_memory[1097]=8'd32;
+  text_memory[1098]=8'd85;
+  text_memory[1099]=8'd78;
+  text_memory[1100]=8'd83;
+  text_memory[1101]=8'd85;
+  text_memory[1102]=8'd80;
+  text_memory[1103]=8'd80;
+  text_memory[1104]=8'd79;
+  text_memory[1105]=8'd82;
+  text_memory[1106]=8'd84;
+  text_memory[1107]=8'd69;
+  text_memory[1108]=8'd68;
+  text_memory[1120]=8'd66;
+  text_memory[1121]=8'd77;
+  text_memory[1122]=8'd80;
+  text_memory[1123]=8'd32;
+  text_memory[1124]=8'd73;
+  text_memory[1125]=8'd77;
+  text_memory[1126]=8'd65;
+  text_memory[1127]=8'd71;
+  text_memory[1128]=8'd69;
+  text_memory[1152]=8'd78;
+  text_memory[1153]=8'd79;
+  text_memory[1154]=8'd32;
+  text_memory[1155]=8'd80;
+  text_memory[1156]=8'd73;
+  text_memory[1157]=8'd67;
+  text_memory[1158]=8'd84;
+  text_memory[1159]=8'd85;
+  text_memory[1160]=8'd82;
+  text_memory[1161]=8'd69;
+  text_memory[1162]=8'd83;
+  text_memory[1184]=8'd78;
+  text_memory[1185]=8'd79;
+  text_memory[1186]=8'd32;
+  text_memory[1187]=8'd86;
+  text_memory[1188]=8'd73;
+  text_memory[1189]=8'd68;
+  text_memory[1190]=8'd69;
+  text_memory[1191]=8'd79;
+  text_memory[1192]=8'd83;
+  text_memory[1216]=8'd51;
+  text_memory[1217]=8'd32;
+  text_memory[1218]=8'd85;
+  text_memory[1219]=8'd80;
+  text_memory[1220]=8'd32;
+  text_memory[1221]=8'd32;
+  text_memory[1222]=8'd52;
+  text_memory[1223]=8'd32;
+  text_memory[1224]=8'd68;
+  text_memory[1225]=8'd79;
+  text_memory[1226]=8'd87;
+  text_memory[1227]=8'd78;
+  text_memory[1228]=8'd32;
+  text_memory[1229]=8'd32;
+  text_memory[1230]=8'd50;
+  text_memory[1231]=8'd32;
+  text_memory[1232]=8'd79;
+  text_memory[1233]=8'd80;
+  text_memory[1234]=8'd69;
+  text_memory[1235]=8'd78;
+  text_memory[1236]=8'd32;
+  text_memory[1237]=8'd32;
+  text_memory[1238]=8'd49;
+  text_memory[1239]=8'd32;
+  text_memory[1240]=8'd66;
+  text_memory[1241]=8'd65;
+  text_memory[1242]=8'd67;
+  text_memory[1243]=8'd75;
+  text_memory[1248]=8'd83;
+  text_memory[1249]=8'd73;
+  text_memory[1250]=8'd90;
+  text_memory[1251]=8'd69;
+  text_memory[1252]=8'd32;
+  text_memory[1280]=8'd84;
+  text_memory[1281]=8'd73;
+  text_memory[1282]=8'd77;
+  text_memory[1283]=8'd69;
+  text_memory[1284]=8'd32;
+  text_memory[1312]=8'd32;
+  text_memory[1313]=8'd80;
+  text_memory[1314]=8'd65;
+  text_memory[1315]=8'd85;
+  text_memory[1316]=8'd83;
+  text_memory[1317]=8'd69;
+  text_memory[1344]=8'd32;
+  text_memory[1345]=8'd80;
+  text_memory[1346]=8'd76;
+  text_memory[1347]=8'd65;
+  text_memory[1348]=8'd89;
+  text_memory[1408]=8'd83;
+  text_memory[1409]=8'd73;
+  text_memory[1410]=8'd76;
+  text_memory[1411]=8'd69;
+  text_memory[1412]=8'd78;
+  text_memory[1413]=8'd84;
+  text_memory[1414]=8'd32;
+  text_memory[1415]=8'd65;
+  text_memory[1416]=8'd78;
+  text_memory[1417]=8'd65;
+  text_memory[1418]=8'd76;
+  text_memory[1419]=8'd89;
+  text_memory[1420]=8'd83;
+  text_memory[1421]=8'd73;
+  text_memory[1422]=8'd83;
+  text_memory[1504]=8'd82;
+  text_memory[1505]=8'd69;
+  text_memory[1506]=8'd83;
+  text_memory[1507]=8'd79;
+  text_memory[1508]=8'd85;
+  text_memory[1509]=8'd82;
+  text_memory[1510]=8'd67;
+  text_memory[1511]=8'd69;
+  text_memory[1512]=8'd32;
+  text_memory[1513]=8'd69;
+  text_memory[1514]=8'd82;
+  text_memory[1515]=8'd82;
+  text_memory[1516]=8'd79;
+  text_memory[1517]=8'd82;
+  text_memory[1518]=8'd32;
+  text_memory[1519]=8'd45;
+  text_memory[1520]=8'd32;
+  text_memory[1521]=8'd82;
+  text_memory[1522]=8'd69;
+  text_memory[1523]=8'd84;
+  text_memory[1524]=8'd85;
+  text_memory[1525]=8'd82;
+  text_memory[1526]=8'd78;
+  text_memory[1527]=8'd32;
+  text_memory[1528]=8'd84;
+  text_memory[1529]=8'd79;
+  text_memory[1530]=8'd32;
+  text_memory[1531]=8'd76;
+  text_memory[1532]=8'd73;
+  text_memory[1533]=8'd83;
+  text_memory[1534]=8'd84;
+  text_memory[1536]=8'd86;
+  text_memory[1537]=8'd79;
+  text_memory[1538]=8'd73;
+  text_memory[1539]=8'd67;
+  text_memory[1540]=8'd69;
+  text_memory[1541]=8'd32;
+  text_memory[1542]=8'd80;
+  text_memory[1543]=8'd82;
+  text_memory[1544]=8'd79;
+  text_memory[1545]=8'd77;
+  text_memory[1546]=8'd80;
+  text_memory[1547]=8'd84;
+  text_memory[1568]=8'd76;
+  text_memory[1569]=8'd79;
+  text_memory[1570]=8'd65;
+  text_memory[1571]=8'd68;
+  text_memory[1572]=8'd73;
+  text_memory[1573]=8'd78;
+  text_memory[1574]=8'd71;
+  text_memory[1575]=8'd32;
+  text_memory[1576]=8'd47;
+  text_memory[1577]=8'd32;
+  text_memory[1578]=8'd86;
+  text_memory[1579]=8'd69;
+  text_memory[1580]=8'd82;
+  text_memory[1581]=8'd73;
+  text_memory[1582]=8'd70;
+  text_memory[1583]=8'd89;
+  text_memory[1584]=8'd73;
+  text_memory[1585]=8'd78;
+  text_memory[1586]=8'd71;
+  text_memory[1600]=8'd68;
+  text_memory[1601]=8'd73;
+  text_memory[1602]=8'd65;
+  text_memory[1603]=8'd71;
+  text_memory[1604]=8'd32;
+  text_memory[1605]=8'd69;
+  text_memory[1606]=8'd82;
+  text_memory[1607]=8'd82;
+  text_memory[1608]=8'd58;
+  text_memory[1609]=8'd32;
+  text_memory[1632]=8'd32;
+  text_memory[1633]=8'd65;
+  text_memory[1634]=8'd85;
+  text_memory[1635]=8'd68;
+  text_memory[1636]=8'd73;
+  text_memory[1637]=8'd79;
+  text_memory[1638]=8'd32;
+  text_memory[1639]=8'd85;
+  text_memory[1640]=8'd70;
+  text_memory[1641]=8'd58;
+  text_memory[1642]=8'd32;
+  text_memory[1664]=8'd32;
+  text_memory[1665]=8'd32;
+  text_memory[1666]=8'd67;
+  text_memory[1667]=8'd82;
+  text_memory[1668]=8'd67;
+  text_memory[1669]=8'd47;
+  text_memory[1670]=8'd83;
+  text_memory[1671]=8'd89;
+  text_memory[1672]=8'd78;
+  text_memory[1673]=8'd67;
+  text_memory[1674]=8'd32;
+  text_memory[1675]=8'd83;
+  text_memory[1676]=8'd84;
+  text_memory[1677]=8'd65;
+  text_memory[1678]=8'd84;
+  text_memory[1679]=8'd85;
+  text_memory[1680]=8'd83;
+  text_memory[1681]=8'd32;
+  text_memory[1682]=8'd79;
+  text_memory[1683]=8'd86;
+  text_memory[1684]=8'd69;
+  text_memory[1685]=8'd82;
+  text_memory[1686]=8'd32;
+  text_memory[1687]=8'd85;
+  text_memory[1688]=8'd65;
+  text_memory[1689]=8'd82;
+  text_memory[1690]=8'd84;
+  text_memory[1792]=8'd49;
+  text_memory[1793]=8'd58;
+  text_memory[1794]=8'd81;
+  text_memory[1795]=8'd85;
+  text_memory[1796]=8'd65;
+  text_memory[1797]=8'd68;
+  text_memory[1798]=8'd32;
+  text_memory[1799]=8'd50;
+  text_memory[1800]=8'd58;
+  text_memory[1801]=8'd80;
+  text_memory[1802]=8'd65;
+  text_memory[1803]=8'd85;
+  text_memory[1804]=8'd83;
+  text_memory[1805]=8'd69;
+  text_memory[1806]=8'd32;
+  text_memory[1807]=8'd51;
+  text_memory[1808]=8'd47;
+  text_memory[1809]=8'd52;
+  text_memory[1810]=8'd58;
+  text_memory[1811]=8'd83;
+  text_memory[1812]=8'd84;
+  text_memory[1813]=8'd69;
+  text_memory[1814]=8'd80;
+  text_memory[960]=8'd49;
+  text_memory[961]=8'd58;
+  text_memory[962]=8'd66;
+  text_memory[963]=8'd65;
+  text_memory[964]=8'd67;
+  text_memory[965]=8'd75;
+  text_memory[966]=8'd32;
+  text_memory[967]=8'd50;
+  text_memory[968]=8'd58;
+  text_memory[969]=8'd80;
+  text_memory[970]=8'd65;
+  text_memory[971]=8'd85;
+  text_memory[972]=8'd83;
+  text_memory[973]=8'd69;
+  text_memory[974]=8'd32;
+  text_memory[975]=8'd51;
+  text_memory[976]=8'd58;
+  text_memory[977]=8'd90;
+  text_memory[978]=8'd79;
+  text_memory[979]=8'd79;
+  text_memory[980]=8'd77;
+  text_memory[981]=8'd32;
+  text_memory[982]=8'd52;
+  text_memory[983]=8'd58;
+  text_memory[984]=8'd86;
+  text_memory[985]=8'd73;
+  text_memory[986]=8'd69;
+  text_memory[987]=8'd87;
+  text_memory[992]=8'd49;
+  text_memory[993]=8'd58;
+  text_memory[994]=8'd66;
+  text_memory[995]=8'd65;
+  text_memory[996]=8'd67;
+  text_memory[997]=8'd75;
+  text_memory[998]=8'd32;
+  text_memory[999]=8'd50;
+  text_memory[1000]=8'd58;
+  text_memory[1001]=8'd80;
+  text_memory[1002]=8'd65;
+  text_memory[1003]=8'd85;
+  text_memory[1004]=8'd83;
+  text_memory[1005]=8'd69;
+  text_memory[1006]=8'd32;
+  text_memory[1007]=8'd51;
+  text_memory[1008]=8'd47;
+  text_memory[1009]=8'd52;
+  text_memory[1010]=8'd58;
+  text_memory[1011]=8'd83;
+  text_memory[1012]=8'd84;
+  text_memory[1013]=8'd69;
+  text_memory[1014]=8'd80;
+  text_memory[1376]=8'd83;
+  text_memory[1377]=8'd87;
+  text_memory[1378]=8'd50;
+  text_memory[1379]=8'd58;
+  text_memory[1380]=8'd83;
+  text_memory[1381]=8'd80;
+  text_memory[1382]=8'd69;
+  text_memory[1383]=8'd69;
+  text_memory[1384]=8'd68;
+  text_memory[1385]=8'd32;
+  text_memory[1386]=8'd83;
+  text_memory[1387]=8'd69;
+  text_memory[1388]=8'd84;
+  text_memory[1389]=8'd84;
+  text_memory[1390]=8'd73;
+  text_memory[1391]=8'd78;
+  text_memory[1392]=8'd71;
+  text_memory[1440]=8'd83;
+  text_memory[1441]=8'd87;
+  text_memory[1442]=8'd50;
+  text_memory[1443]=8'd58;
+  text_memory[1444]=8'd82;
+  text_memory[1445]=8'd65;
+  text_memory[1446]=8'd84;
+  text_memory[1447]=8'd69;
+  text_memory[1448]=8'd32;
+  text_memory[1449]=8'd77;
+  text_memory[1450]=8'd79;
+  text_memory[1451]=8'd68;
+  text_memory[1452]=8'd69;
+  text_memory[1472]=8'd51;
+  text_memory[1473]=8'd58;
+  text_memory[1474]=8'd45;
+  text_memory[1475]=8'd32;
+  text_memory[1476]=8'd52;
+  text_memory[1477]=8'd58;
+  text_memory[1478]=8'd43;
+  text_memory[1479]=8'd32;
+  text_memory[1480]=8'd72;
+  text_memory[1481]=8'd79;
+  text_memory[1482]=8'd76;
+  text_memory[1483]=8'd68;
+  text_memory[1484]=8'd58;
+  text_memory[1485]=8'd48;
+  text_memory[1486]=8'd46;
+  text_memory[1487]=8'd50;
+  text_memory[1488]=8'd53;
+  text_memory[1489]=8'd32;
+  text_memory[1490]=8'd83;
+  text_memory[1491]=8'd87;
+  text_memory[1492]=8'd50;
+  text_memory[1493]=8'd58;
+  text_memory[1494]=8'd69;
+  text_memory[1495]=8'd88;
+  text_memory[1496]=8'd73;
+  text_memory[1497]=8'd84;
+  text_memory[1696]=8'd78;
+  text_memory[1697]=8'd79;
+  text_memory[1698]=8'd82;
+  text_memory[1699]=8'd77;
+  text_memory[1700]=8'd65;
+  text_memory[1701]=8'd76;
+  text_memory[1702]=8'd32;
+  text_memory[1703]=8'd86;
+  text_memory[1704]=8'd73;
+  text_memory[1705]=8'd68;
+  text_memory[1706]=8'd69;
+  text_memory[1707]=8'd79;
+  text_memory[1728]=8'd65;
+  text_memory[1729]=8'd78;
+  text_memory[1730]=8'd65;
+  text_memory[1731]=8'd76;
+  text_memory[1732]=8'd89;
+  text_memory[1733]=8'd83;
+  text_memory[1734]=8'd73;
+  text_memory[1735]=8'd83;
+  text_memory[1736]=8'd32;
+  text_memory[1737]=8'd90;
+  text_memory[1738]=8'd79;
+  text_memory[1739]=8'd79;
+  text_memory[1740]=8'd77;
+  text_memory[1760]=8'd83;
+  text_memory[1761]=8'd87;
+  text_memory[1762]=8'd50;
+  text_memory[1763]=8'd32;
+  text_memory[1764]=8'd83;
+  text_memory[1765]=8'd80;
+  text_memory[1766]=8'd69;
+  text_memory[1767]=8'd69;
+  text_memory[1768]=8'd68;
+  text_memory[1769]=8'd32;
+  text_memory[1770]=8'd83;
+  text_memory[1771]=8'd69;
+  text_memory[1772]=8'd84;
+  text_memory[1792]=8'd51;
+  text_memory[1793]=8'd32;
+  text_memory[1794]=8'd80;
+  text_memory[1795]=8'd82;
+  text_memory[1796]=8'd69;
+  text_memory[1797]=8'd86;
+  text_memory[1798]=8'd32;
+  text_memory[1799]=8'd52;
+  text_memory[1800]=8'd32;
+  text_memory[1801]=8'd78;
+  text_memory[1802]=8'd69;
+  text_memory[1803]=8'd88;
+  text_memory[1804]=8'd84;
+  text_memory[1805]=8'd32;
+  text_memory[1806]=8'd49;
+  text_memory[1807]=8'd32;
+  text_memory[1808]=8'd66;
+  text_memory[1809]=8'd65;
+  text_memory[1810]=8'd67;
+  text_memory[1811]=8'd75;
+  text_memory[1812]=8'd32;
+  text_memory[1813]=8'd72;
+  text_memory[1814]=8'd79;
+  text_memory[1815]=8'd76;
+  text_memory[1816]=8'd68;
+  text_memory[1817]=8'd50;
+  text_memory[1818]=8'd32;
+  text_memory[1819]=8'd65;
+  text_memory[1820]=8'd85;
+  text_memory[1821]=8'd84;
+  text_memory[1822]=8'd79;
+  text_memory[1824]=8'd65;
+  text_memory[1825]=8'd85;
+  text_memory[1826]=8'd84;
+  text_memory[1827]=8'd79;
+  text_memory[1828]=8'd32;
+  text_memory[1829]=8'd53;
+  text_memory[1830]=8'd83;
+  text_memory[1831]=8'd32;
+  text_memory[1832]=8'd32;
+  text_memory[1833]=8'd72;
+  text_memory[1834]=8'd79;
+  text_memory[1835]=8'd76;
+  text_memory[1836]=8'd68;
+  text_memory[1837]=8'd50;
+  text_memory[1838]=8'd32;
+  text_memory[1839]=8'd83;
+  text_memory[1840]=8'd84;
+  text_memory[1841]=8'd79;
+  text_memory[1842]=8'd80;
+  text_memory[1856]=8'd77;
+  text_memory[1857]=8'd65;
+  text_memory[1858]=8'd78;
+  text_memory[1859]=8'd85;
+  text_memory[1860]=8'd65;
+  text_memory[1861]=8'd76;
+  text_memory[1862]=8'd32;
+  text_memory[1863]=8'd32;
+  text_memory[1864]=8'd72;
+  text_memory[1865]=8'd79;
+  text_memory[1866]=8'd76;
+  text_memory[1867]=8'd68;
+  text_memory[1868]=8'd50;
+  text_memory[1869]=8'd32;
+  text_memory[1870]=8'd65;
+  text_memory[1871]=8'd85;
+  text_memory[1872]=8'd84;
+  text_memory[1873]=8'd79;
+  text_memory[1888]=8'd69;
+  text_memory[1889]=8'd88;
+  text_memory[1890]=8'd80;
+  text_memory[1891]=8'd79;
+  text_memory[1892]=8'd83;
+  text_memory[1893]=8'd85;
+  text_memory[1894]=8'd82;
+  text_memory[1895]=8'd69;
+  text_memory[1920]=8'd67;
+  text_memory[1921]=8'd79;
+  text_memory[1922]=8'd78;
+  text_memory[1923]=8'd84;
+  text_memory[1924]=8'd82;
+  text_memory[1925]=8'd65;
+  text_memory[1926]=8'd83;
+  text_memory[1927]=8'd84;
+  text_memory[1952]=8'd66;
+  text_memory[1953]=8'd82;
+  text_memory[1954]=8'd73;
+  text_memory[1955]=8'd71;
+  text_memory[1956]=8'd72;
+  text_memory[1957]=8'd84;
+  text_memory[1958]=8'd78;
+  text_memory[1959]=8'd69;
+  text_memory[1960]=8'd83;
+  text_memory[1961]=8'd83;
+  text_memory[1984]=8'd86;
+  text_memory[1985]=8'd79;
+  text_memory[1986]=8'd76;
+  text_memory[1987]=8'd85;
+  text_memory[1988]=8'd77;
+  text_memory[1989]=8'd69;
+  text_memory[2016]=8'd49;
+  text_memory[2017]=8'd32;
+  text_memory[2018]=8'd73;
+  text_memory[2019]=8'd84;
+  text_memory[2020]=8'd69;
+  text_memory[2021]=8'd77;
+  text_memory[2022]=8'd32;
+  text_memory[2023]=8'd51;
+  text_memory[2024]=8'd43;
+  text_memory[2025]=8'd32;
+  text_memory[2026]=8'd52;
+  text_memory[2027]=8'd45;
+  text_memory[2028]=8'd32;
+  text_memory[2029]=8'd72;
+  text_memory[2030]=8'd79;
+  text_memory[2031]=8'd76;
+  text_memory[2032]=8'd68;
+  text_memory[2033]=8'd58;
+  text_memory[2034]=8'd52;
+  text_memory[2035]=8'd32;
+  text_memory[2036]=8'd83;
+  text_memory[2037]=8'd87;
+  text_memory[2038]=8'd52;
+  text_memory[2039]=8'd32;
+  text_memory[2040]=8'd69;
+  text_memory[2041]=8'd88;
+  text_memory[2042]=8'd73;
+  text_memory[2043]=8'd84;
+ end
+ always @(posedge clk)text_q<=text_memory[character[10:0]];
+ always @(posedge clk)if(rst)literal1<=0;else literal1<=character[15];
+ bb_font5x7 font(literal1 ? text_q:ch1,gy1,gx1,glyph);
+ always @(posedge clk)begin
+  if(rst)begin x_pre<=0;y_pre<=0;sync_pre<=0;x0<=0;y0<=0;sync0<=0;ch1<=32;gx1<=0;gy1<=0;base1<=0;ink1<=0;text1<=0;sync1<=0;ohs<=0;ovs<=0;ode<=0;rgb<=0;end
+  else begin
+   x_pre<=x;y_pre<=y;sync_pre<={hs,vs,de};
+   x0<=x_pre;y0<=y_pre;sync0<=sync_pre;
+   ch1<=character;gx1<=gx;gy1<=gy;base1<=base;ink1<=ink;text1<=text_on;sync1<=sync0;
+   {ohs,ovs,ode}<=sync1;rgb<=text1&&glyph ? ink1:label_on1&&label_q ? 24'hffffff:base1;
+  end
+ end
+endmodule

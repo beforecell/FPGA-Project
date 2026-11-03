@@ -1,0 +1,6 @@
+fpga/** -text
+tests/**/*.sv -text
+tests/*.sv -text
+*.ps1 -text
+*.vbs -text
+*.hex -text

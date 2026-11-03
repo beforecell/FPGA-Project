@@ -1,0 +1,17 @@
+vendor/anlogic/BUFGMUX.v
+vendor/anlogic/IDDR.v
+vendor/anlogic/ODDR.v
+vendor/anlogic/RAMB16_S9_S9.v
+vendor/anlogic/rgmii_interface.v
+vendor/anlogic/rx_client_fifo.v
+vendor/anlogic/temac_block.v
+vendor/anlogic/tx_client_fifo.v
+vendor/anlogic/tx_clk_en_gen.v
+vendor/anlogic/udp_ip_protocol_stack_merge.enc.v
+vendor/anlogic/TEMAC_CORE_gate.v
+vendor/anlogic/pll_gen.v
+vendor/anlogic/rx_pll.v
+rtl/top.v
+rtl/network_bridge.v
+rtl/tf_bridge_core.v
+rtl/sd_maint4.v

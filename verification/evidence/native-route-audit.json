@@ -1,0 +1,14 @@
+{
+  "redacted_copy": true,
+  "source_record_sha256": "4487EF9A09BB6DF0B81E24B0BDC2333B05C6551948C2A0DF1AB8E35265A384DA",
+  "record": {
+    "status": "PASS_NATIVE_READ_ONLY_FINAL_ROUTING_TIMING_AUDIT",
+    "bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+    "setup_ns": 1.265,
+    "hold_ns": 0.035,
+    "unchanged_database_and_bit": true,
+    "board_operations": false,
+    "TF_written": false,
+    "Flash_written": false
+  }
+}

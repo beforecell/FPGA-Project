@@ -1,0 +1,4 @@
+rtl/bb_uart8n1.v
+rtl/sd_maint4.v
+rtl/tf_bridge_core.v
+rtl/top.v

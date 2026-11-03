@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-03T02:52:18.074865+00:00",
+  "project_relative": "fpga/player",
+  "runtime_tag": "ARTF",
+  "bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+  "diagnostic_only": true,
+  "uart_controls": true,
+  "configuration_status": "INHERITED_READBACK_ISSUE_NOT_RETESTED",
+  "recommended_release": false,
+  "board_verified": false,
+  "UART_playback_verified": true,
+  "native_passed": true,
+  "scope": {
+    "native_setup_ns": 1.265,
+    "native_hold_ns": 0.035,
+    "UART": "New ARTF,catalogue ready,real card video loading and advancing,error0",
+    "visual": "NOT_RETESTED_USER_REQUESTED_AUTONOMOUS",
+    "hearing": "NOT_RETESTED",
+    "algorithm": "abs(Y(t)-Y(max(0,t-3))) plus local support and inner contour",
+    "temporal_persistence": "None,no old-mask decoration",
+    "comparison_span_at30fps_ms": 100,
+    "configuration": "INHERITED_READBACK_ISSUE_NOT_RETESTED",
+    "TF_written": false,
+    "Flash_written": false,
+    "board_record": "verification/evidence/flash-and-autoboot.json"
+  }
+}

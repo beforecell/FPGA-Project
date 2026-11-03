@@ -1,0 +1,26 @@
+{
+  "redacted_copy": true,
+  "source_record_sha256": "E295DA92FD32D3EFAFD0304861B0CF62FE61B1B07A9EAFEBA5661E25F346792B",
+  "record": {
+    "status": "FLASH_PROGRAM_AND_VERIFY_PASS_AND_USER_POWER_CYCLE_UART_AUTOBOOT_PASS",
+    "date_local": "2026-11-02",
+    "bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+    "vendor_programmer": "[LOCAL_PATH_REDACTED]",
+    "Flash_verified": true,
+    "cold_boot_verified_by_UART": true,
+    "UART_packets": 15,
+    "runtime_tag": "ARTF",
+    "TF_catalog_ready": true,
+    "TF_resource_count": 1,
+    "error": 0,
+    "TF_written": false,
+    "JTAG_download_after_user_power_cycle": false,
+    "UART_control_sent": false,
+    "visual_after_cold_boot": "NOT_RETESTED",
+    "hearing_after_cold_boot": "NOT_RETESTED",
+    "configuration_SRAM_readback": "UNRESOLVED_SEPARATE_CHECK",
+    "evidence_directory": "[LOCAL_PATH_REDACTED]",
+    "original_failed_attempts_preserved": true,
+    "contest_ZIP_changed": false
+  }
+}

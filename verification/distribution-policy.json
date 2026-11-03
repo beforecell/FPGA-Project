@@ -1,0 +1,9 @@
+{
+  "repository": "beforecell/FPGA-Project",
+  "public_source": true,
+  "official_IP_in_git": false,
+  "Windows_font_files_in_git": false,
+  "private_media_in_git": false,
+  "binary_release": "Draft only,not public pending license review",
+  "untouched_original_submission": true
+}

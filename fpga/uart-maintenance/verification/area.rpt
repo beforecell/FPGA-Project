@@ -1,0 +1,82 @@
+standard
+***Report Model: top Device: EG4S20BG256***
+
+IO Statistics
+#IO                        14   out of    188    7.45%
+  #input                    3
+  #output                   6
+  #inout                    5
+
+Utilization Statistics
+#lut                     5356   out of  19600   27.33%
+#reg                     1874   out of  19600    9.56%
+#le                      5588
+  #lut only              3714   out of   5588   66.46%
+  #reg only               232   out of   5588    4.15%
+  #lut&reg               1642   out of   5588   29.38%
+#bram                       0   out of     64    0.00%
+  #bram9k                   0
+  #fifo9k                   0
+#bram32k                    0   out of     16    0.00%
+#dsp                        0   out of     29    0.00%
+#pad                       14   out of    188    7.45%
+  #ireg                     7
+  #oreg                     4
+  #treg                     0
+#pll                        0   out of      4    0.00%
+#gclk                       0   out of     16    0.00%
+
+
+Detailed IO Report
+
+    Name       Direction    Location    IOStandard    IOType    DriveStrength    PullType    PackReg  
+     clk         INPUT         R7        LVCMOS33      PAD           N/A           NONE       NONE    
+    rst_n        INPUT         A2        LVCMOS33      PAD           N/A          PULLUP      IREG    
+   uart_rx       INPUT        F12        LVCMOS33      PAD           N/A          PULLUP      IREG    
+   led[3]       OUTPUT        B12        LVCMOS33      PAD            8            NONE       NONE    
+   led[2]       OUTPUT        C10        LVCMOS33      PAD            8            NONE       OREG    
+   led[1]       OUTPUT         A3        LVCMOS33      PAD            8            NONE       NONE    
+   led[0]       OUTPUT         A4        LVCMOS33      PAD            8            NONE       OREG    
+   sd_dclk      OUTPUT        A14        LVCMOS33      PAD            8            NONE       OREG    
+   uart_tx      OUTPUT        D12        LVCMOS33      PAD            8            NONE       OREG    
+   sd_cmd        INOUT        A13        LVCMOS33      PAD            8           PULLUP      IREG    
+  sd_dat[3]      INOUT        A12        LVCMOS33      PAD            8           PULLUP      IREG    
+  sd_dat[2]      INOUT        A11        LVCMOS33      PAD            8           PULLUP      IREG    
+  sd_dat[1]      INOUT        B15        LVCMOS33      PAD            8           PULLUP      IREG    
+  sd_dat[0]      INOUT        B14        LVCMOS33      PAD            8           PULLUP      IREG    
+
+Report Clock Domain Luts:
+
+------------------------------------------------------------------------------------------------------------
+  Index   |  Name   |  Frequency   |  LUT As Logic   |  LUT As Shifter   |  LUT As Dram   |  BRAM   |  DSP
+------------------------------------------------------------------------------------------------------------
+  #1      |  clk    |  50MHz       |  2172           |  0                |  768           |  0      |  0
+------------------------------------------------------------------------------------------------------------
+
+Clock Resource Statistics
+Index     ClockNet     Type               DriverType         Driver          Fanout
+#1        clk_dup_1    Global             io                 clk_syn_2.di    1397
+
+Report Hierarchy Area:
++-------------------------------------------------------------------------------+
+|Instance |Module         |le      |lut     |ripple  |seq     |bram    |dsp     |
++-------------------------------------------------------------------------------+
+|top      |top            |5588    |4967    |389     |1885    |0       |0       |
+|  core   |tf_bridge_core |3786    |3430    |224     |913     |0       |0       |
+|  sd     |sd_maint4      |1693    |1438    |155     |902     |0       |0       |
+|  serial |bb_uart8n1     |97      |89      |8       |50      |0       |0       |
++-------------------------------------------------------------------------------+
+
+
+DataNet Average Fanout:
+
+   Index     Fanout     Nets  
+    #1          1       4263  
+    #2          2       2430  
+    #3          3       361   
+    #4          4       260   
+    #5        5-10      393   
+    #6        11-50     291   
+    #7       51-100      48   
+    #8       101-500     7    
+  Average     3.10            

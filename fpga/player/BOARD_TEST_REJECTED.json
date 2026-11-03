@@ -1,0 +1,8 @@
+{
+  "status": "DIAGNOSTIC_ONLY_CONFIGURATION_PENDING",
+  "bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+  "native_passed": true,
+  "UART_playback_passed": true,
+  "user_visual_retested": false,
+  "configuration": "INHERITED_READBACK_ISSUE_NOT_RETESTED"
+}

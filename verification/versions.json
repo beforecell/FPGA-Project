@@ -1,0 +1,30 @@
+{
+  "player": {
+    "project_relative": "fpga/player",
+    "bit_sha256": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233",
+    "source_files": 104,
+    "setup_ns": 1.265,
+    "hold_ns": 0.035
+  },
+  "tf-maintenance": {
+    "project_relative": "fpga/tf-maintenance",
+    "bit_sha256": "106575929DCB7598C335BBD32C54CB048D02877DDE4A78941ECCC731A48DF4A6",
+    "source_files": 22,
+    "setup_ns": 0.752,
+    "hold_ns": 0.024
+  },
+  "uart-maintenance": {
+    "project_relative": "fpga/uart-maintenance",
+    "bit_sha256": "EE8B3EC55893D9E67E4A0E2038324E43D5BA4E0E805E626A933256D8E8045FB8",
+    "source_files": 9,
+    "setup_ns": 2.744,
+    "hold_ns": 0.159
+  },
+  "fallback-art9": {
+    "project_relative": "fpga/fallback-art9",
+    "bit_sha256": "F2EADA95F3D6F37C46B073DFE4DBC304C1A5C4479E000F977F28FA2B77E21B23",
+    "source_files": 100,
+    "setup_ns": 4.302,
+    "hold_ns": 0.024
+  }
+}

@@ -1,0 +1,499 @@
+{
+  "date_local": "2026-11-02",
+  "scope": "This publication only:offline software,synthetic RTL,exact dependency restoration;same PC,no new TD build or hardware operations",
+  "records": {
+    "software": {
+      "status": "PASS_OFFLINE_REPOSITORY",
+      "tests": [
+        {
+          "test": "235_frozen_inputs",
+          "projects": [
+            {
+              "role": "fallback-art9",
+              "source_files": 100,
+              "bit_present": true,
+              "expected_bit": "F2EADA95F3D6F37C46B073DFE4DBC304C1A5C4479E000F977F28FA2B77E21B23"
+            },
+            {
+              "role": "player",
+              "source_files": 104,
+              "bit_present": true,
+              "expected_bit": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233"
+            },
+            {
+              "role": "tf-maintenance",
+              "source_files": 22,
+              "bit_present": true,
+              "expected_bit": "106575929DCB7598C335BBD32C54CB048D02877DDE4A78941ECCC731A48DF4A6"
+            },
+            {
+              "role": "uart-maintenance",
+              "source_files": 9,
+              "bit_present": true,
+              "expected_bit": "EE8B3EC55893D9E67E4A0E2038324E43D5BA4E0E805E626A933256D8E8045FB8"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "test": "exact_bit_binding",
+          "role": "player",
+          "status": "PASS"
+        },
+        {
+          "test": "exact_bit_binding",
+          "role": "tf-maintenance",
+          "status": "PASS"
+        },
+        {
+          "test": "exact_bit_binding",
+          "role": "uart-maintenance",
+          "status": "PASS"
+        },
+        {
+          "test": "exact_bit_binding",
+          "role": "fallback-art9",
+          "status": "PASS"
+        },
+        {
+          "test": "new_640x480_BMP_package",
+          "status": "PASS"
+        },
+        {
+          "test": "MP4_4frames_nonzero_PCM_complete_Alpha",
+          "samples": 7680,
+          "status": "PASS"
+        },
+        {
+          "test": "actual_Tk_GUI_without_optional_voices",
+          "status": "PASS"
+        },
+        {
+          "test": "ARTF_context_control_labels",
+          "status": "PASS"
+        },
+        {
+          "test": "BW_failure_log_rejection_and_argument_set",
+          "status": "PASS"
+        },
+        {
+          "test": "local_registration_preserves_frozen_manifest_and_diagnostic_scope",
+          "status": "PASS"
+        },
+        {
+          "test": "Flash_default_dry_run_does_not_execute_programmer",
+          "status": "PASS"
+        },
+        {
+          "test": "own_geometric_video_4standard_images_container",
+          "status": "PASS"
+        }
+      ],
+      "device_actions": false
+    },
+    "manager": {
+      "status": "PASS_BEHAVIORAL_SLOT_MODEL",
+      "tests": [
+        {
+          "test": "manager_lag3",
+          "output": "PASS3-frame history manager 100 committed frames,two loops,slot protection,CRC/frame binding,first-frame no history,16bit wrap\ntests\\manager_lag3.sv:42: $finish called at 1081900 (1s)\n"
+        },
+        {
+          "test": "manager_lag3_random_seek",
+          "output": "PASS3-frame history manager 100 committed frames,two loops,slot protection,CRC/frame binding,first-frame no history,16bit wrap\ntests\\manager_lag3_random_seek.sv:42: $finish called at 1081900 (1s)\n"
+        },
+        {
+          "test": "manager_lag3_rapid_epoch",
+          "output": "PASS500 rapid target epochs,clamped3-frame source-pair tags,slot protection,final CRC/frame binding,actual publications1\ntests\\manager_lag3_rapid_epoch.sv:41: $finish called at 47380 (1s)\n"
+        }
+      ],
+      "hardware": false
+    },
+    "network_host": {
+      "status": "PASS",
+      "utc": "2026-11-03T05:40:00.313308+00:00",
+      "scope": "Host fault/card models and actual small packager;no physical network,card or FPGA operations",
+      "cases": [
+        "window8,out_of_order,ACK_loss,corrupt_reply,retry_same_data",
+        "write_range_authorization",
+        "cancel_before_send",
+        "envelope_CRC_rejection",
+        "temporary_board_address_adapts_to_different_host_IPs",
+        "batched_full_image_commit_last_and_complete_SHA256",
+        "readback_corruption_never_success",
+        "batched_export_actual_bytes_and_file_SHA256",
+        "real_packager_Chinese_directory_and_SHA256_filename",
+        "configured_TD_path_passed_to_background_download_without_execution",
+        "overall_write_plus_readback_progress"
+      ]
+    },
+    "network_RTL": {
+      "status": "PASS",
+      "scope": "Real network_bridge and tf_bridge_core RTL;UDP transport timing and SD storage abstract;not RGMII or physical SD proof",
+      "responses": 24,
+      "writes": 8,
+      "window": 8,
+      "source_sha256": {
+        "fpga/tf-maintenance/rtl/network_bridge.v": "4e6df02c35bb11963e48d287f352144a8c2c29adc2414871962f209e7a0e73c9",
+        "fpga/uart-maintenance/rtl/tf_bridge_core.v": "86d751e6df5062a7230af78058aad892d92e27da1cade78ba3d8d666c713e521"
+      },
+      "stdout": "PASS real bridge/core,window8 read/write,CRC,session and range gates,writes8\n[LOCAL_PATH_REDACTED] $finish called at 1033220 (1s)\n"
+    },
+    "pixels": {
+      "status": "PASS",
+      "scope": "Actual pixel RTL and both memory branches vs independent reference;not physical HDMI",
+      "pixels": 976896,
+      "cases": [
+        {
+          "name": "static_rich_texture",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "thin_strokes",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 208
+        },
+        {
+          "name": "weak_dark_stroke",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 82
+        },
+        {
+          "name": "isolated_hot_pixel",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "translated_object",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 136
+        },
+        {
+          "name": "invalid_history",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "unseen_random_pair",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "small_exposure_shift",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "large_exposure_shift",
+          "width": 96,
+          "height": 64,
+          "white_pixels": 0
+        },
+        {
+          "name": "synthetic_lowlight_full_raster",
+          "width": 640,
+          "height": 480,
+          "white_pixels": 1220
+        },
+        {
+          "name": "synthetic_lowlight_quad_raster",
+          "width": 640,
+          "height": 480,
+          "white_pixels": 1944
+        },
+        {
+          "name": "synthetic_day_quad_raster",
+          "width": 640,
+          "height": 480,
+          "white_pixels": 1944
+        }
+      ],
+      "records": [
+        {
+          "implementation": "behavioral",
+          "status": "PASS",
+          "stdout": "PASS 976896 exact pixels,full/quad seams,source pair validity,thin/static/noise/exposure,two-clock pipeline\n[LOCAL_PATH_REDACTED] $finish called at 9901190 (1s)\n"
+        },
+        {
+          "implementation": "primitive_mixed",
+          "status": "PASS",
+          "stdout": "PASS 976896 exact pixels,full/quad seams,source pair validity,thin/static/noise/exposure,two-clock pipeline\n[LOCAL_PATH_REDACTED] $finish called at 9901190 (1s)\n"
+        }
+      ],
+      "source_sha256": {
+        "alpha_frame_difference.v": "06e075ceb600195a47fcc85d7d97088ceab8b2f8fe15e9e8d6ed90c2e4ec52ca",
+        "bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+      }
+    },
+    "units": {
+      "status": "PASS_16_FINAL_SOURCE_BOUND_UNITS",
+      "scope": "Icarus RTL models,not physical pins/timing/full player",
+      "records": [
+        {
+          "name": "cert_manager",
+          "status": "PASS",
+          "bench_sha256": "592f7a01e1cb03854ccfba23aa24aa5c4aa077e4c0065109d9a2c5256fe98070",
+          "source_sha256": {
+            "rtl\\bb_replay_manager.v": "82c4b88fab8ad9d746a32e170210a6de31f7220bed8bc61f7e352084f94a8f59"
+          }
+        },
+        {
+          "name": "cert_fast_manager",
+          "status": "PASS",
+          "bench_sha256": "af6db3d6e24323a66a218c2c7a2356dd2e05036f77a788624d1dc358f3fb51ff",
+          "source_sha256": {
+            "rtl\\bb_replay_manager.v": "82c4b88fab8ad9d746a32e170210a6de31f7220bed8bc61f7e352084f94a8f59"
+          }
+        },
+        {
+          "name": "cert_manager_lookup_pipeline",
+          "status": "PASS",
+          "bench_sha256": "e290fc4f11c535b007d061313ff64374eb2062dd36205e149b85889f44d61624",
+          "source_sha256": {
+            "rtl\\bb_replay_manager.v": "82c4b88fab8ad9d746a32e170210a6de31f7220bed8bc61f7e352084f94a8f59"
+          }
+        },
+        {
+          "name": "cert_manager_publication_guard",
+          "status": "PASS",
+          "bench_sha256": "1c7727b15b7238f9a70db2eaa9048431829176a9b0f800beb6a03df5532cb229",
+          "source_sha256": {
+            "rtl\\bb_replay_manager.v": "82c4b88fab8ad9d746a32e170210a6de31f7220bed8bc61f7e352084f94a8f59"
+          }
+        },
+        {
+          "name": "cert_manager_photo_publication",
+          "status": "PASS",
+          "bench_sha256": "3804670d3eb43b751a4f57117c769eb43fa4ffd2ef9b30a7b3c4e11ec1dc68e8",
+          "source_sha256": {
+            "rtl\\bb_replay_manager.v": "82c4b88fab8ad9d746a32e170210a6de31f7220bed8bc61f7e352084f94a8f59"
+          }
+        },
+        {
+          "name": "cert_keyframe_ui",
+          "status": "PASS",
+          "bench_sha256": "4ad8939ea86c65625989e3fc3a2c4f0de937d0828b23844cc511552f307d45bb",
+          "source_sha256": {
+            "rtl\\alpha_ui.v": "193e8c6cf9a52797f6a5d30c2cffb3783a68a5d87fb9dda7cd1676b1bafebc12"
+          }
+        },
+        {
+          "name": "cert_keyframe_storage",
+          "status": "PASS",
+          "bench_sha256": "8c4a69d3706939df7298f1805ec48313e8a7faecb715d1d55a2b5e1462c4c3a3",
+          "source_sha256": {
+            "rtl\\alpha_keyframes.v": "f4968c426b78a23dffc8f2bf86c979f5123e194298a8c761f58fcb3f1af5382f",
+            "rtl\\bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+          }
+        },
+        {
+          "name": "cert_keyframe_absolute_seek",
+          "status": "PASS",
+          "bench_sha256": "86e2e5fc51e15e74120a0bba77a88655b2d906316e2f53db75c4f2e6da2b0214",
+          "source_sha256": {
+            "rtl\\alpha_frame_seek.v": "d7efa6fd090c21d6aa7cfcb1aae6d2a30fcb13e67a09ad2deb0c8d63b9a1419b"
+          }
+        },
+        {
+          "name": "cert_timeline_math",
+          "status": "PASS",
+          "bench_sha256": "6432c876f60d036e9a95d788f7ceaca26ca344f76ee639b6b541eef414aa0328",
+          "source_sha256": {
+            "rtl\\alpha_timeline.v": "3d491730c702d9718a497dd59032bfe6a10ee38d1c211c62c75d6fc27b70376b"
+          }
+        },
+        {
+          "name": "cert_timeline_time",
+          "status": "PASS",
+          "bench_sha256": "9fcabae67df82dd246de3409ba0c224e5bb297fdfb211d2231ab481395afff0d",
+          "source_sha256": {
+            "rtl\\alpha_time_triplet.v": "dcd224df331bc7d9d33cd2d957d456a9b9f579d8a2cea1e401056bca69cf19e6",
+            "rtl\\alpha_time_dual.v": "e041117bf27c9c339fdac6116d62e355468c0c5808006eaaa1d2cb7b74179822"
+          }
+        },
+        {
+          "name": "cert_timeline_blanking_math",
+          "status": "PASS",
+          "bench_sha256": "133a52e44e8406661ab10bb88f8ad89f78da1b7993f2517cd82fb9fdb75dff4d",
+          "source_sha256": {
+            "rtl\\alpha_timeline.v": "3d491730c702d9718a497dd59032bfe6a10ee38d1c211c62c75d6fc27b70376b"
+          }
+        },
+        {
+          "name": "cert_keyframe_status",
+          "status": "PASS",
+          "bench_sha256": "2ad40f626cee7d1ba6ebd1121e07a16882ef71d835870f1a3b13e55157787810",
+          "source_sha256": {
+            "rtl\\alpha_status_tx.v": "6809a4d96b7e6a233141706a5c0f1d4f2a090266c076db665db6e2fde19e49c2",
+            "rtl\\bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+          }
+        },
+        {
+          "name": "cert_keyframe_physical_keys",
+          "status": "PASS",
+          "bench_sha256": "110c231ae8192aed5f0293f50bc07666616ea1151948d693c4af5c78d5102cc6",
+          "source_sha256": {
+            "rtl\\alpha_keys.v": "de499ac459c2c86e6bab72292a86ac0d59d0bd426dcfe20bd2dd6e98296bfef6"
+          }
+        },
+        {
+          "name": "cert_keyframe_text",
+          "status": "PASS",
+          "bench_sha256": "760dfd452a938813e3f239d201da17a6ecc08cae6e589f39c0c290fe2849c27d",
+          "source_sha256": {
+            "rtl\\alpha_views.v": "483c004968e3a332038d5bfe865e4f7cf7093502ff55919251f51e8fd9194cfa",
+            "rtl\\alpha_box_smooth.v": "6aa5008669593bad925d9e3767d28adecea8c88f07a4475bd3436849575c5a3d",
+            "rtl\\alpha_picture_adjust.v": "c172667124943d39166e50d5256094169e5e07895e90d0b260b40851bd071995",
+            "rtl\\alpha_bcd_bank.v": "73765860801f7390fffd6ab92c5f9c902d1d11f9c1c4e3616d37825e1cc27cfc",
+            "rtl\\alpha_frame_difference.v": "06e075ceb600195a47fcc85d7d97088ceab8b2f8fe15e9e8d6ed90c2e4ec52ca",
+            "rtl\\alpha_time_triplet.v": "dcd224df331bc7d9d33cd2d957d456a9b9f579d8a2cea1e401056bca69cf19e6",
+            "rtl\\alpha_time_dual.v": "e041117bf27c9c339fdac6116d62e355468c0c5808006eaaa1d2cb7b74179822",
+            "rtl\\alpha_timeline.v": "3d491730c702d9718a497dd59032bfe6a10ee38d1c211c62c75d6fc27b70376b",
+            "rtl\\bb_font5x7.v": "5f83f2817ff32a304e45d671a6ea077c228abbf4a713f5f828bde39bc88a3fd2",
+            "rtl\\bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+          }
+        },
+        {
+          "name": "cert_timeline_render",
+          "status": "PASS",
+          "bench_sha256": "db1eb21c2c9caec8b6439da64c9e0b0b9a08630c0f85effb4cf0024f0b95f8b7",
+          "source_sha256": {
+            "rtl\\alpha_views.v": "483c004968e3a332038d5bfe865e4f7cf7093502ff55919251f51e8fd9194cfa",
+            "rtl\\alpha_box_smooth.v": "6aa5008669593bad925d9e3767d28adecea8c88f07a4475bd3436849575c5a3d",
+            "rtl\\alpha_picture_adjust.v": "c172667124943d39166e50d5256094169e5e07895e90d0b260b40851bd071995",
+            "rtl\\alpha_bcd_bank.v": "73765860801f7390fffd6ab92c5f9c902d1d11f9c1c4e3616d37825e1cc27cfc",
+            "rtl\\alpha_frame_difference.v": "06e075ceb600195a47fcc85d7d97088ceab8b2f8fe15e9e8d6ed90c2e4ec52ca",
+            "rtl\\alpha_time_triplet.v": "dcd224df331bc7d9d33cd2d957d456a9b9f579d8a2cea1e401056bca69cf19e6",
+            "rtl\\alpha_time_dual.v": "e041117bf27c9c339fdac6116d62e355468c0c5808006eaaa1d2cb7b74179822",
+            "rtl\\alpha_timeline.v": "3d491730c702d9718a497dd59032bfe6a10ee38d1c211c62c75d6fc27b70376b",
+            "rtl\\bb_font5x7.v": "5f83f2817ff32a304e45d671a6ea077c228abbf4a713f5f828bde39bc88a3fd2",
+            "rtl\\bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+          }
+        },
+        {
+          "name": "cert_metadata_shared",
+          "status": "PASS",
+          "bench_sha256": "0bfb749c4d696a23531e8a7badecf9deccb5228baaa90fda70db7c4d12d73db6",
+          "source_sha256": {
+            "rtl\\alpha_keyframes.v": "f4968c426b78a23dffc8f2bf86c979f5123e194298a8c761f58fcb3f1af5382f",
+            "rtl\\alpha_status_tx.v": "6809a4d96b7e6a233141706a5c0f1d4f2a090266c076db665db6e2fde19e49c2",
+            "rtl\\alpha_metadata_ram.v": "4f0703d16c57e14d4c97cc61a7d02ce0259754a6bf2c6f2e5003306cd8080960",
+            "rtl\\bb3_ram.v": "40af4abdfc6e792d7c9b42ea5423fabaa897371073f88e46db12cd6e616067d5"
+          }
+        }
+      ]
+    },
+    "clean_reproduction": {
+      "status": "PASS_CLEAN_PUBLIC_TREE_INSTALL_AND_RESTORATION",
+      "scope": "Same PC,archived tracked Git tree,new path,new .venv,local authorized official inputs/fonts;not second-PC or physical-board verification",
+      "public_tree_archive": true,
+      "restored_inputs": 49,
+      "source_bindings": 235,
+      "installed_environment": true,
+      "publication_test": {
+        "status": "PASS_OFFLINE_REPOSITORY",
+        "tests": [
+          {
+            "test": "235_frozen_inputs",
+            "projects": [
+              {
+                "role": "fallback-art9",
+                "source_files": 100,
+                "bit_present": true,
+                "expected_bit": "F2EADA95F3D6F37C46B073DFE4DBC304C1A5C4479E000F977F28FA2B77E21B23"
+              },
+              {
+                "role": "player",
+                "source_files": 104,
+                "bit_present": true,
+                "expected_bit": "3FBD9229E297AA81649045BF0E59612117AC4AA6C0AB75CEC2297B2B68EB0233"
+              },
+              {
+                "role": "tf-maintenance",
+                "source_files": 22,
+                "bit_present": true,
+                "expected_bit": "106575929DCB7598C335BBD32C54CB048D02877DDE4A78941ECCC731A48DF4A6"
+              },
+              {
+                "role": "uart-maintenance",
+                "source_files": 9,
+                "bit_present": true,
+                "expected_bit": "EE8B3EC55893D9E67E4A0E2038324E43D5BA4E0E805E626A933256D8E8045FB8"
+              }
+            ],
+            "status": "PASS"
+          },
+          {
+            "test": "exact_bit_binding",
+            "role": "player",
+            "status": "PASS"
+          },
+          {
+            "test": "exact_bit_binding",
+            "role": "tf-maintenance",
+            "status": "PASS"
+          },
+          {
+            "test": "exact_bit_binding",
+            "role": "uart-maintenance",
+            "status": "PASS"
+          },
+          {
+            "test": "exact_bit_binding",
+            "role": "fallback-art9",
+            "status": "PASS"
+          },
+          {
+            "test": "new_640x480_BMP_package",
+            "status": "PASS"
+          },
+          {
+            "test": "MP4_4frames_nonzero_PCM_complete_Alpha",
+            "samples": 7680,
+            "status": "PASS"
+          },
+          {
+            "test": "actual_Tk_GUI_without_optional_voices",
+            "status": "PASS"
+          },
+          {
+            "test": "ARTF_context_control_labels",
+            "status": "PASS"
+          },
+          {
+            "test": "BW_failure_log_rejection_and_argument_set",
+            "status": "PASS"
+          },
+          {
+            "test": "local_registration_preserves_frozen_manifest_and_diagnostic_scope",
+            "status": "PASS"
+          },
+          {
+            "test": "Flash_default_dry_run_does_not_execute_programmer",
+            "status": "PASS"
+          },
+          {
+            "test": "own_geometric_video_4standard_images_container",
+            "status": "PASS"
+          }
+        ],
+        "device_actions": false
+      },
+      "hardware_actions": false,
+      "earlier_caught_issue": "Initial stage included own generated sample intermediates,now removed from index and ignored;initial failed clean test retained locally"
+    }
+  },
+  "FPGA_downloaded": false,
+  "TF_written": false,
+  "Flash_written": false,
+  "PC_network_changed": false
+}

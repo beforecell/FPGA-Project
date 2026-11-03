@@ -1,0 +1,8 @@
+{
+  "status": "PASS_PUBLIC_INDEX_AUDIT",
+  "files": 299,
+  "bytes": 1605978,
+  "private_materials_found": [],
+  "MIT_original_unchanged": true,
+  "scope": "Targeted identifiers/credentials/binary/vendor-path scan;license boundaries are documented separately"
+}

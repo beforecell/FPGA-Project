@@ -1,0 +1,3 @@
+function [63:0] alpha_label;input[2:0]label;input[3:0]row;begin case({label,row})
+@@LOCAL_FONT_ROWS@@
+default:alpha_label=0;endcase end endfunction

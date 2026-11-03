@@ -1,0 +1,2 @@
+cryptography==50.0.2
+# Only old offline Ed25519 CLI functions need this;GUI does not.

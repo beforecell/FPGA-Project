@@ -1,0 +1,55 @@
+REDACTED HISTORICAL VENDOR BW LOG;not a new Flash operation.
+RUN-1002 : start command "download -mode program_spi -bit ARTF.bit -chip EG4S20BG256 -flashsize 16 -cable 0 -spd 6 -v"
+
+PRG-2014 : Chip validation success: EG4S20BG256
+
+PRG-1001 : SPI Flash ID is:  ef
+
+RUN-1002 : start command "bit_to_vec -chip EG4S20BG256 -m program_spi -freq 3.000000 -bit ARTF.bit"
+
+RUN-1003 : finish command "bit_to_vec -chip EG4S20BG256 -m program_spi -freq 3.000000 -bit ARTF.bit" in  0.645868s wall, 0.500000s user + 0.140625s system = 0.640625s CPU (99.2%)
+
+
+
+RUN-1004 : used memory is 280 MB, reserved memory is 277 MB, peak memory is 291 MB
+
+RUN-1002 : start command "program_spi -cable 0 -spd 6 -chip EG4S20BG256"
+
+RUN-1003 : finish command "program_spi -cable 0 -spd 6 -chip EG4S20BG256" in  210.396051s wall, 1.343750s user + 0.203125s system = 1.546875s CPU (0.7%)
+
+
+
+RUN-1004 : used memory is 280 MB, reserved memory is 277 MB, peak memory is 291 MB
+
+RUN-1002 : start command "bit_to_vec -chip EG4S20BG256 -m verify_spi -freq 3.000000 -bit ARTF.bit"
+
+RUN-1003 : finish command "bit_to_vec -chip EG4S20BG256 -m verify_spi -freq 3.000000 -bit ARTF.bit" in  0.300774s wall, 0.281250s user + 0.015625s system = 0.296875s CPU (98.7%)
+
+
+
+RUN-1004 : used memory is 173 MB, reserved memory is 167 MB, peak memory is 291 MB
+
+RUN-1002 : start command "program -cable 0 -spd 6"
+
+
+
+0%   10   20   30   40   50   60   70   80   90   100%
+
+|----|----|----|----|----|----|----|----|----|----|
+
+***************************************************
+
+RUN-1003 : finish command "program -cable 0 -spd 6" in  15.165882s wall, 0.203125s user + 0.031250s system = 0.234375s CPU (1.5%)
+
+
+
+RUN-1004 : used memory is 203 MB, reserved memory is 197 MB, peak memory is 291 MB
+
+RUN-1003 : finish command "download -mode program_spi -bit ARTF.bit -chip EG4S20BG256 -flashsize 16 -cable 0 -spd 6 -v" in  229.999950s wall, 3.484375s user + 0.406250s system = 3.890625s CPU (1.7%)
+
+
+
+RUN-1004 : used memory is 203 MB, reserved memory is 198 MB, peak memory is 291 MB
+
+DIRECT_ARTF_PROGRAM_AND_VERIFY_COMPLETED
+
