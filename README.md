@@ -4,6 +4,18 @@
 
 **当前版本为ARTF诊断候选，不是全部验证/功能验收通过的稳定版。** 已有原生正时序、UART控制和Flash固化/断电自启遥测；配置SRAM读回一致性仍待核实。旧版人工画面、声音和30分钟记录没有转移为本版验收。
 
+## 页面名称与下载选择
+
+| 页面中的名称 | 中文含义 | 应该怎样选择 |
+|---|---|---|
+| `main` | **当前主分支：最新源码与说明** | 日常查看、克隆或下载源码使用这里；它会继续更新 |
+| `alpha-1.0-artf-repro-fix-20261103` | **2026-11-03 复现修正版源码快照（推荐）** | 想取得固定、不会继续变化的本次修复源码，选这个标签 |
+| `alpha-1.0-artf-diagnostic-20261102` | **2026-11-02 历史原版快照与固件附件** | 下载四份冻结bit和合成IMG；其自动Source code不包含11月3日的复现修复 |
+
+上述两个是**版本标签（Tags）**，不是Issue，也不是两个新工程或两个分支。`main`是唯一默认主分支。为兼容已有下载脚本和链接，英文标签标识保持不变；Release页面使用清晰的中文名称。
+
+**取源码：**[当前main](https://github.com/beforecell/FPGA-Project/tree/main)或[推荐固定版本](https://github.com/beforecell/FPGA-Project/releases/tag/alpha-1.0-artf-repro-fix-20261103)。**取bit/演示IMG：**[历史固件附件](https://github.com/beforecell/FPGA-Project/releases/tag/alpha-1.0-artf-diagnostic-20261102)，也可按快速开始运行固定SHA下载脚本。两次发布的冻结播放器固件没有变，均保留ARTF诊断候选说明。
+
 ## 获取与复现
 
 1. Windows64位、Python3.12、合法TD6.2.1（6.2.168116）及JTAG驱动；制作MP4另装FFmpeg/ffprobe。
